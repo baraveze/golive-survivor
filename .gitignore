@@ -1,0 +1,35 @@
+# Dependencias y archivos generados
+node_modules/
+/dist/
+.vite/
+*.tsbuildinfo
+
+# Configuración local y credenciales; conservar la plantilla pública
+.env
+.env.*
+!.env.example
+
+# Pruebas y reportes (se conservan localmente)
+/tests/
+/test/
+__tests__/
+*.test.*
+*.spec.*
+coverage/
+test-results/
+playwright-report/
+.vitest/
+.playwright-mcp/
+
+# Capturas, verificaciones y especificación de trabajo
+/artifacts/
+/Proyecto Go Live Survivor.md
+
+# Archivos locales del editor y del sistema
+.vscode/
+.idea/
+*.log
+.DS_Store
+Thumbs.db
+Desktop.ini
+*/*.txt

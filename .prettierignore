@@ -1,0 +1,6 @@
+node_modules/
+dist/
+artifacts/
+.playwright-mcp/
+Proyecto Go Live Survivor.md
+package-lock.json
