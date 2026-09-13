@@ -84,7 +84,7 @@ export class GameScene extends Phaser.Scene {
   private drawIdle(): void {
     this.player = new Player(this, BALANCE.width * 0.52, BALANCE.height * 0.47);
   }
-  startRun(): void {
+  private clearRunObjects(): void {
     this.tweens.killAll();
     this.time.removeAllEvents();
     this.children.list
@@ -100,6 +100,25 @@ export class GameScene extends Phaser.Scene {
       .forEach((child) => child.destroy());
     this.enemies = [];
     this.projectiles = [];
+    this.announcement = undefined;
+  }
+  cancelRun(): void {
+    if (!this.activeRun || this.ended) return;
+    this.activeRun = false;
+    this.ended = true;
+    this.paused = false;
+    this.input.keyboard!.enabled = false;
+    this.input.keyboard!.removeCapture('UP,DOWN,LEFT,RIGHT,SPACE');
+    this.input.keyboard!.resetKeys();
+    this.clearRunObjects();
+    this.time.paused = false;
+    this.tweens.timeScale = 1;
+    this.drawIdle();
+  }
+  startRun(): void {
+    this.clearRunObjects();
+    this.time.paused = false;
+    this.tweens.timeScale = 1;
     this.scoring = new ScoreSystem();
     this.elapsed = 0;
     this.lastShot = -BALANCE.attackIntervalMs;

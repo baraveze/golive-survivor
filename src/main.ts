@@ -38,7 +38,7 @@ app.innerHTML = `
           <div class="menu-controls"><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / <kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd> <span>MOVERTE</span></span><span><kbd>SPACE</kbd> EMERGENCY HOTFIX</span><span class="auto-label"><i class="status-dot"></i> AUTO-FIX ENABLED</span></div>
         </section>
         <section id="hud" class="hud" hidden aria-label="Estado de la partida"><div class="hud-top"><div class="stability-box"><div class="hud-label">SYSTEM STABILITY <strong id="stability-value">100%</strong></div><div class="stability-track"><div id="stability-fill"></div></div><span id="phase-label">● PHASE GREEN</span></div><div class="timer-box"><span class="hud-label">GO LIVE</span><strong id="timer">00:00 <small>/ 01:30</small></strong></div><div class="score-box"><span class="hud-label">SCORE</span><strong id="score">0</strong><span id="combo">COMBO x1</span></div></div><div id="boss-bar" hidden><span>⚠ PRODUCTION ISSUE</span><div><i id="boss-fill"></i></div></div><div class="hud-bottom"><button id="pause">Ⅱ PAUSA <kbd>ESC</kbd></button><button id="hotfix"><kbd>SPACE</kbd><span id="hotfix-label">HOTFIX READY</span><i id="hotfix-fill"></i></button><span>FIXES AUTOMÁTICOS <i class="status-dot"></i></span></div></section>
-        <section id="pause-panel" class="pause-panel overlay" hidden><span class="release-tag">NO TOQUES PRODUCCIÓN</span><h2>GO LIVE EN PAUSA</h2><p>Respirá. Los incidentes pueden esperar.</p><button id="resume" class="primary">CONTINUAR →</button></section>
+        <section id="pause-panel" class="pause-panel overlay" hidden><span class="release-tag">NO TOQUES PRODUCCIÓN</span><h2>GO LIVE EN PAUSA</h2><p>Respirá. Los incidentes pueden esperar.</p><button id="resume" class="primary">CONTINUAR →</button><button id="cancel-run" class="cancel-run">CANCELAR PARTIDA Y VOLVER AL INICIO</button><p class="cancel-note">Si cancelás, esta partida no guarda puntaje.</p></section>
         <section id="result" class="result overlay" hidden aria-labelledby="result-title"><div class="result-card"><span id="result-tag" class="release-tag"></span><h2 id="result-title"></h2><p id="result-message"></p><div class="result-score"><span>SCORE FINAL</span><strong id="final-score"></strong></div><p id="survival-bonus" class="survival-bonus" hidden>SURVIVAL BONUS +1000</p><div class="result-stats"><div><span>TIEMPO</span><strong id="final-time"></strong></div><div><span>RESUELTOS</span><strong id="final-issues"></strong></div><div><span>MAX COMBO</span><strong id="final-combo"></strong></div><div><span>PRODUCTION ISSUE</span><strong id="final-boss"></strong></div></div><p id="save-status" role="status"></p><button id="again" class="primary">PLAY AGAIN <span>↻</span></button><div class="menu-links"><button data-leaderboard>♜ LEADERBOARD</button><span>·</span><button id="back-menu">VOLVER AL INICIO</button></div></div></section>
       </div>
       <div class="arena-status"><span><i class="status-dot"></i> <span id="system-status">LISTO PARA EL DEPLOY</span></span><span>NO MEETINGS. JUST SURVIVAL.</span><span id="version"></span></div>
@@ -47,7 +47,7 @@ app.innerHTML = `
     <section class="feature-row" aria-label="Cómo sobrevivir"><article><span class="feature-number">01</span><div><h3>MOVETE. ESQUIVÁ. SOBREVIVÍ.</h3><p>Los problemas te siguen. No les des el gusto.</p></div><span class="feature-icon">⌘</span></article><article><span class="feature-number">02</span><div><h3>EL FIX SALE SOLO.</h3><p>Vos esquivá. Nosotros apuntamos a los bugs.</p></div><span class="feature-icon">⌁</span></article><article><span class="feature-number">03</span><div><h3>¿TODO ARDE? HOTFIX.</h3><p>Una barra espaciadora. Una segunda oportunidad.</p></div><span class="feature-icon">ϟ</span></article></section>
     <section id="enemies" class="enemy-guide" aria-labelledby="enemies-title" tabindex="-1"></section>
   </main>
-  <footer><span class="footer-credits">Creado por <strong>Ezequiel Baravalle</strong> con ayuda de <strong>Codex</strong>.</span><span>BUILT FOR THE PEOPLE WHO SHIP.</span><span>Hecho con café y permisos de producción. <span class="footer-cursor">▮</span></span></footer>
+  <footer><span class="footer-credits">Creado por <strong>Ezequiel Baravalle</strong> con ayuda de <strong>Codex</strong>.</span><span>BUILT FOR THE PEOPLE WHO SHIP.</span><span>Hecho con café y permisos de producción. <span class="footer-cursor">▮</span></span><span id="access-notice" class="access-notice" hidden>En modo online registramos tu IP, navegador y fecha de acceso. Estos datos no aparecen en el leaderboard.</span></footer>
   <dialog id="info-dialog"><div class="dialog-heading"><span class="eyebrow">GO LIVE SURVIVOR</span><button id="close-dialog" aria-label="Cerrar">✕</button></div><div id="dialog-content"></div></dialog>
 `;
 const el = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -88,6 +88,7 @@ void createScoreRepository().then((result) => {
   repository = result.repository;
   el('mode').textContent = repository.mode === 'online' ? 'ONLINE MODE' : 'LOCAL MODE';
   el('connection-notice').textContent = result.notice;
+  el('access-notice').hidden = repository.mode !== 'online';
 });
 
 function start(): void {
@@ -120,12 +121,23 @@ el('start-form').onsubmit = (event) => {
   start();
 };
 el('again').onclick = start;
-el('back-menu').onclick = () => {
+function showMenu(): void {
+  runNumber++;
   screen = 'menu';
   el('result').hidden = true;
+  el('hud').hidden = true;
+  el('pause-panel').hidden = true;
   el('menu').hidden = false;
   el('system-status').textContent = 'LISTO PARA EL DEPLOY';
+  document.querySelectorAll<HTMLButtonElement>('header [data-leaderboard]').forEach((button) => {
+    button.disabled = false;
+  });
   nickname.focus();
+}
+el('back-menu').onclick = showMenu;
+el('cancel-run').onclick = () => {
+  scene.cancelRun();
+  showMenu();
 };
 el('pause').onclick = () => scene.togglePause();
 el('resume').onclick = () => {
@@ -275,8 +287,26 @@ async function showLeaderboard(weekly: boolean): Promise<void> {
   rows.forEach((row, index) => {
     const tr = document.createElement('tr');
     tr.classList.toggle('is-you', row.user_id === source.userId);
+    const podium = [
+      { style: 'gold', medal: '🥇', label: '1.º puesto · Oro' },
+      { style: 'silver', medal: '🥈', label: '2.º puesto · Plata' },
+      { style: 'bronze', medal: '🥉', label: '3.º puesto · Bronce' },
+    ][index];
+    const position = document.createElement('td');
+    if (podium) {
+      tr.classList.add(`podium-${podium.style}`);
+      const medal = document.createElement('span');
+      medal.className = 'rank-medal';
+      medal.textContent = podium.medal;
+      medal.setAttribute('role', 'img');
+      medal.setAttribute('aria-label', podium.label);
+      medal.title = podium.label;
+      position.append(medal);
+    } else {
+      position.textContent = String(index + 1).padStart(2, '0');
+    }
+    tr.append(position);
     [
-      String(index + 1).padStart(2, '0'),
       `${row.player_name}${row.user_id === source.userId ? '  ← YOU' : ''}`,
       number(row.score),
     ].forEach((value) => {

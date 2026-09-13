@@ -16,6 +16,7 @@ Abrí la dirección que imprime Vite (normalmente http://127.0.0.1:5173). En Win
 - WASD o flechas: movimiento; disparos automáticos al enemigo más cercano.
 - SPACE: Hotfix, radio de 205 px y recarga de 8 segundos.
 - ESC: pausa. Cambiar de ventana también pausa; continuar requiere una acción explícita.
+- Desde la pausa podés cancelar y volver al inicio. La partida cancelada no envía ni guarda score; la siguiente empieza desde cero.
 - Llegar a 90 segundos con Stability positiva: victoria y +1000 puntos.
 - El boss anuncia su llegada al segundo 65 y aparece dos segundos después. Resolverlo da 500 puntos base; no es obligatorio para sobrevivir.
 
@@ -53,7 +54,7 @@ Si Supabase está configurado pero la conexión o autenticación inicial falla, 
 
 1. Creá un proyecto Supabase.
 2. En Authentication → Sign In / Providers, habilitá **Anonymous Sign-Ins**.
-3. Ejecutá `supabase/migrations/001_initial_schema.sql` en el SQL Editor, o aplicala con tu flujo habitual de migrations.
+3. Ejecutá las migrations de `supabase/migrations/` en orden (`001_initial_schema.sql`, luego `002_access_logs.sql`) en el SQL Editor, o aplicalas con tu flujo habitual de migrations. Si ya tenés el juego funcionando, ejecutá solamente la nueva `002_access_logs.sql`.
 4. Copiá la Project URL y la **publishable key** (`sb_publishable_…`).
 5. Copiá `.env.example` a `.env` y completá:
 
@@ -66,7 +67,26 @@ Si Supabase está configurado pero la conexión o autenticación inicial falla, 
 
 La app reutiliza la sesión existente o ejecuta `signInAnonymously()`. No solicita email ni contraseña. El nickname es independiente de la identidad de Auth. Consultá la [documentación de autenticación anónima](https://supabase.com/docs/guides/auth/auth-anonymous) y la [referencia de signInAnonymously](https://supabase.com/docs/reference/javascript/auth-signinanonymously).
 
-Las semanas comienzan el lunes a las 00:00 **UTC**, tanto en SQL como en el cliente. El ranking semanal y el histórico muestran la mejor partida de cada identidad; los empates se ordenan por fecha y UUID. La posición semanal se calcula entre todos los jugadores, no solamente el top 10. YOUR BEST muestra el récord histórico personal.
+Las semanas comienzan el lunes a las 00:00 **UTC**, tanto en SQL como en el cliente. El ranking semanal y el histórico muestran la mejor partida de cada identidad; los empates se ordenan por fecha y UUID. Los puestos 1, 2 y 3 tienen medallas de oro, plata y bronce. Se mantiene la indicación YOU del jugador actual. La posición semanal se calcula entre todos los jugadores, no solamente el top 10. YOUR BEST muestra el récord histórico personal.
+
+## Registro de accesos
+
+En modo online se registra un acceso al abrir o recargar la app, después de autenticar al visitante. No se genera otro acceso al reiniciar o cancelar una partida. La tabla `public.access_logs` contiene `user_id`, `ip_address` (IPv4 o IPv6), `browser`, `user_agent` (hasta 512 caracteres) y `created_at`. Los scores se vinculan a los accesos mediante `user_id`; no se agregan datos personales a la tabla pública de scores.
+
+Un trigger de Supabase obtiene la IP de `X-Forwarded-For` y el navegador de `User-Agent`, según la [documentación de cabeceras de Supabase](https://supabase.com/docs/guides/api/securing-your-api#request-information). No se consulta ningún servicio externo para obtener la IP. Si la cabecera está ausente o no contiene una IP válida, se guarda `NULL`. La familia de navegador es orientativa: por ejemplo, navegadores basados en Chromium pueden identificarse como Chrome. Las cabeceras pueden ser modificadas por clientes/proxies; no son prueba de identidad ni un mecanismo anti-cheat.
+
+RLS y los permisos de columnas permiten al cliente insertar únicamente su propio `user_id`. Los otros valores se generan en la base. No hay permisos de lectura, modificación o borrado para jugadores; estos registros se consultan administrativamente en Supabase y **no aparecen en ningún leaderboard**. El pie de página informa este registro a los visitantes online.
+
+Si falta la migración o falla el registro, la app continúa online y puede guardar scores. La consola muestra un aviso sin IP, claves ni tokens. Local Mode no registra accesos. Esta tabla no reconstruye visitas anteriores ni elimina automáticamente registros; el administrador puede definir la conservación y borrar los accesos que ya no necesite.
+
+Para revisar los accesos desde el SQL Editor:
+
+```sql
+select created_at, user_id, ip_address, browser, user_agent
+from public.access_logs
+order by created_at desc
+limit 50;
+```
 
 Para verificar la integración en tu proyecto: jugá una partida, comprobá la fila en `scores`, reiniciá el navegador para comprobar la sesión y abrí la app en otro perfil para ver una segunda identidad. Intentar insertar otro `user_id`, modificar, borrar o fijar `created_at` desde un cliente autenticado debe fallar. La integración real requiere el proyecto y las credenciales públicas; las pruebas locales no sustituyen esa verificación.
 

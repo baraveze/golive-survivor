@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 import { LocalScoreRepository } from './score/LocalScoreRepository';
 import { SupabaseScoreRepository } from './score/SupabaseScoreRepository';
 import type { ScoreRepository } from './score/ScoreRepository';
+import { recordAccess } from './access';
 
 export async function createScoreRepository(): Promise<{
   repository: ScoreRepository;
@@ -38,6 +39,7 @@ export async function createScoreRepository(): Promise<{
           timer = setTimeout(() => reject(new Error('Connection timeout')), 8000);
         }),
       ]);
+      void recordAccess(client, repository.userId);
       return { repository, notice: '' };
     } catch (error) {
       client.auth.stopAutoRefresh();
