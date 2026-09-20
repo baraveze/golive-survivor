@@ -1,7 +1,8 @@
-import { t, language, locale } from './i18n';
+import { t, language, locale, setLanguage } from './i18n';
+import { translateInterface } from './i18n/dom';
 import './styles/main.css';
 import { GAME_CONFIG } from './game/config/gameConfig';
-import { DEFEAT_MESSAGES, PHASES } from './game/config/messages';
+import { defeatMessages, PHASES } from './game/config/messages';
 import { createGame } from './game/Game';
 import type { HudState } from './game/scenes/GameScene';
 import { AudioService } from './services/AudioService';
@@ -11,6 +12,7 @@ import type { ScoreRepository, ScoreSubmission } from './services/score/ScoreRep
 import { sanitizeNickname, validateNickname } from './utils/nickname';
 import { storage } from './utils/storage';
 import { renderEnemyGuide } from './ui/enemyGuide';
+import { TouchControls } from './ui/TouchControls';
 
 document.documentElement.lang = language;
 const app = document.querySelector<HTMLDivElement>('#app')!;
@@ -56,6 +58,30 @@ const el = <T extends HTMLElement = HTMLElement>(id: string) => document.getElem
 renderEnemyGuide(el('enemies'));
 const number = (n: number) => new Intl.NumberFormat(locale).format(n);
 const audio = new AudioService();
+const touchPreference = storage.get('gls:touch');
+let touchMode = touchPreference
+  ? touchPreference === 'on'
+  : navigator.maxTouchPoints > 0 || matchMedia('(pointer: coarse)').matches;
+el('start-form').insertAdjacentHTML(
+  'beforebegin',
+  `<label class="touch-option"><input id="touch-mode" type="checkbox">${t('Touch controls')}</label><p id="touch-hint" class="touch-hint">${t('Drag the joystick to move. Tap PATCH to clear nearby enemies. Landscape gives you more room.')}</p>`,
+);
+el('hud').insertAdjacentHTML(
+  'beforeend',
+  `<div id="touch-controls" class="touch-controls" hidden><div id="touch-stick" class="touch-stick" role="group" aria-label="${t('Movement joystick')}"><span class="stick-arrows" aria-hidden="true">↕ ↔</span><span id="touch-thumb" class="touch-thumb"></span></div><button id="touch-hotfix" class="touch-hotfix" aria-label="${t('EMERGENCY HOTFIX')}"><span aria-hidden="true">ϟ</span><span id="touch-hotfix-label">${t('HOTFIX READY')}</span></button></div>`,
+);
+const touchToggle = el<HTMLInputElement>('touch-mode');
+function updateTouchOption(): void {
+  touchToggle.checked = touchMode;
+  el('touch-hint').hidden = !touchMode;
+  document.body.classList.toggle('touch-mode', touchMode);
+}
+touchToggle.onchange = () => {
+  touchMode = touchToggle.checked;
+  storage.set('gls:touch', touchMode ? 'on' : 'off');
+  updateTouchOption();
+};
+updateTouchOption();
 let gamePaused = false;
 document.addEventListener('pointerup', () => audio.unlock());
 document.addEventListener('keydown', () => audio.unlock());
@@ -86,6 +112,10 @@ let runNumber = 0;
 let currentName = '';
 let screen: 'menu' | 'playing' | 'result' = 'menu';
 let boardRequest = 0;
+let lastHud: HudState | undefined;
+let finalScore: number | undefined;
+let boardWeekly = true;
+let renderSaveStatus = () => '';
 const dialog = el<HTMLDialogElement>('info-dialog');
 const nickname = el<HTMLInputElement>('nickname');
 nickname.value = storage.get('gls:nickname') ?? '';
@@ -97,12 +127,66 @@ el('footer-version').textContent = t('Version') + ' ' + GAME_CONFIG.version;
 const languageSelect = el<HTMLSelectElement>('language');
 languageSelect.value = language;
 languageSelect.onchange = () => {
-  storage.set('gls:language', languageSelect.value);
-  storage.set('gls:nickname', nickname.value);
-  window.location.reload();
+  changeLanguage(languageSelect.value);
 };
 
+function changeLanguage(value: string): void {
+  const previous = language;
+  setLanguage(value);
+  document.documentElement.lang = language;
+  translateInterface(app, previous);
+  scene.refreshLanguage(previous);
+  renderEnemyGuide(el('enemies'));
+  document.querySelectorAll<HTMLSelectElement>('[data-language], #language').forEach((select) => { select.value = language; });
+  el('footer-version').textContent = `${t('Version')} ${GAME_CONFIG.version}`;
+  if (lastHud && screen === 'playing') updateHud(lastHud);
+  if (finalScore !== undefined) el('final-score').textContent = number(finalScore);
+  el('save-status').textContent = renderSaveStatus();
+  if (dialog.open && el('dialog-content').querySelector('#weekly')) void showLeaderboard(boardWeekly);
+}
+
 const { game, scene } = createGame(el('game'), { audio, hud: updateHud, finish: showResult });
+const touchControls = new TouchControls(el('touch-stick'), el('touch-thumb'), (x, y) =>
+  scene.setTouchMovement(x, y),
+);
+el('resume').insertAdjacentHTML(
+  'afterend',
+  `<button id="pause-audio" class="cancel-run">${t('Audio options')}</button>`,
+);
+el('pause-audio').onclick = () => el('sound').click();
+// Each modal needs its own selector because the page behind it is inert.
+for (const target of [el('pause-panel'), el('audio-dialog').querySelector('.audio-options')!, el('info-dialog').querySelector('.dialog-heading')!]) {
+  const label = document.createElement('label');
+  label.className = 'language-control screen-language';
+  label.innerHTML = `<span>${t('Language')}</span><select data-language aria-label="${t('Language')}"><option value="es" lang="es">Español</option><option value="en" lang="en">English</option></select>`;
+  target.append(label);
+  const select = label.querySelector('select')!;
+  select.value = language;
+  select.onchange = () => changeLanguage(select.value);
+  select.addEventListener('keydown', (event) => event.stopPropagation());
+}
+el('touch-hotfix').onpointerdown = (event) => {
+  event.preventDefault();
+  audio.unlock();
+  scene.hotfix();
+};
+el('touch-hotfix').onclick = (event) => {
+  if (event.detail === 0) scene.hotfix();
+};
+let viewportWidth = window.innerWidth;
+window.addEventListener('resize', () => {
+  const widthChanged = window.innerWidth !== viewportWidth;
+  viewportWidth = window.innerWidth;
+  // Keyboard and browser-toolbar height changes should not interrupt a new run.
+  if (widthChanged && touchMode && screen === 'playing' && !gamePaused) scene.togglePause();
+});
+function setTouchPlaying(playing: boolean): void {
+  document.body.classList.toggle('touch-playing', playing && touchMode);
+  touchControls.setEnabled(playing && touchMode);
+  el('touch-controls').hidden = !playing || !touchMode;
+  requestAnimationFrame(() => game.scale.refresh());
+  scene.setMobileView(playing && touchMode);
+}
 // Phaser's ready event precedes scene creation; POST_STEP is the first safe start point.
 game.events.once('poststep', () => {
   el<HTMLButtonElement>('start').disabled = false;
@@ -155,9 +239,8 @@ function start(): void {
   nickname.value = currentName;
   runNumber++;
   screen = 'playing';
+  setTouchPlaying(true);
   audio.music.setScene('game');
-  languageSelect.disabled = true;
-  languageSelect.title = t('Language can be changed from the home screen.');
   el('menu').hidden = true;
   el('result').hidden = true;
   el('hud').hidden = false;
@@ -178,9 +261,8 @@ el('again').onclick = start;
 function showMenu(): void {
   runNumber++;
   screen = 'menu';
+  setTouchPlaying(false);
   audio.music.setScene('home');
-  languageSelect.disabled = false;
-  languageSelect.title = '';
   el('result').hidden = true;
   el('hud').hidden = true;
   el('pause-panel').hidden = true;
@@ -207,7 +289,13 @@ el('hotfix').onclick = () => {
 };
 
 function updateHud(state: HudState): void {
+  lastHud = state;
   gamePaused = state.paused;
+  touchControls.setEnabled(touchMode && screen === 'playing' && !state.paused);
+  el('touch-controls').hidden = !touchMode || state.paused;
+  el<HTMLButtonElement>('touch-hotfix').disabled = state.paused || state.cooldown > 0;
+  el('touch-hotfix-label').textContent =
+    state.cooldown > 0 ? `${Math.ceil(state.cooldown)}s` : t('HOTFIX');
   audio.music.setPaused(state.paused);
   el('stability-value').textContent = `${state.stability}%`;
   el('stability-fill').style.width = `${state.stability}%`;
@@ -233,7 +321,9 @@ function updateHud(state: HudState): void {
 }
 
 function showResult(result: Omit<ScoreSubmission, 'player_name'>): void {
+  finalScore = result.score;
   screen = 'result';
+  setTouchPlaying(false);
   audio.music.setScene('home');
   el('hud').hidden = true;
   el('result').hidden = false;
@@ -246,7 +336,7 @@ function showResult(result: Omit<ScoreSubmission, 'player_name'>): void {
   el('result-title').textContent = survived ? t('GO LIVE SURVIVED') : t('PRODUCTION DOWN');
   el('result-message').textContent = survived
     ? t('Increíblemente, producción sigue funcionando.')
-    : DEFEAT_MESSAGES[Math.floor(Math.random() * DEFEAT_MESSAGES.length)];
+    : defeatMessages()[Math.floor(Math.random() * defeatMessages().length)];
   el('final-score').textContent = number(result.score);
   el('final-time').textContent = `${result.survived_seconds}s`;
   el('final-issues').textContent = String(result.issues_resolved);
@@ -256,7 +346,8 @@ function showResult(result: Omit<ScoreSubmission, 'player_name'>): void {
   el('system-status').textContent = survived
     ? t('PRODUCCIÓN SIGUE FUNCIONANDO. POR AHORA.')
     : t('REVISANDO LOS LOGS...');
-  el('save-status').textContent = t('Guardando partida…');
+  renderSaveStatus = () => t('Guardando partida…');
+  el('save-status').textContent = renderSaveStatus();
   el('again').focus();
   const submission = { ...result, player_name: currentName };
   const thisRun = runNumber;
@@ -267,17 +358,20 @@ function showResult(result: Omit<ScoreSubmission, 'player_name'>): void {
       await activeRepository.submitScore(submission);
       saved = true;
       const rank = await activeRepository.getWeeklyRank();
-      if (runNumber === thisRun)
-        el('save-status').textContent =
-          `${activeRepository.mode === 'online' ? t('WEEKLY RANK') : t('LOCAL RANK')} ${rank ? `#${rank}` : '—'} · ${t('PARTIDA GUARDADA')}`;
+      if (runNumber === thisRun) {
+        renderSaveStatus = () => `${activeRepository.mode === 'online' ? t('WEEKLY RANK') : t('LOCAL RANK')} ${rank ? `#${rank}` : '—'} · ${t('PARTIDA GUARDADA')}`;
+        el('save-status').textContent = renderSaveStatus();
+      }
     } catch {
       if (!saved && activeRepository.mode === 'online') {
         await new LocalScoreRepository().submitScore(submission);
       }
-      if (runNumber === thisRun)
-        el('save-status').textContent = saved
+      if (runNumber === thisRun) {
+        renderSaveStatus = () => saved
           ? t('Partida guardada. Ranking temporalmente no disponible.')
           : t('Sin conexión. Partida guardada en el ranking local.');
+        el('save-status').textContent = renderSaveStatus();
+      }
     }
   })();
 }
@@ -292,6 +386,10 @@ dialog.addEventListener('close', () => {
 el('how-to').onclick = () => {
   el('dialog-content').innerHTML =
     `<span class="release-tag">${t('RUNBOOK / 90 SEGUNDOS')}</span><h2>${t('CÓMO SOBREVIVIR')}</h2><div class="instructions"><p><b>${t('01 / Movete')}</b>${t('Usá WASD o las flechas para esquivar. Si te alcanzan, baja tu System Stability.')}</p><p><b>${t('02 / Los Fixes son automáticos')}</b>${t('Disparás al problema más cercano. Resolvé varios en menos de 2 segundos para encadenar combos hasta x3.')}</p><p><b>${t('03 / Emergency Hotfix')}</b>${t('SPACE lanza un pulso que limpia problemas cercanos. Se recarga cada 8 segundos.')}</p><p><b>${t('04 / Aguantá hasta el final')}</b>${t('La presión sube a los 30 y 60 segundos. Al segundo 65 llega Production Issue. Sobrevivir 90 segundos da +1000 puntos; resolver el boss es opcional.')}</p><p><b>${t('Un respiro')}</b>${t('ESC pausa. Al cambiar de ventana, pausamos automáticamente.')}</p></div><p class="dialog-note">${t('Sin cuentas, sin reuniones, sin “un cambio chiquito”.')}</p>`;
+  el('dialog-content').insertAdjacentHTML(
+    'afterbegin',
+    `<p class="touch-hint">${t('Drag the joystick to move. Tap PATCH to clear nearby enemies. Landscape gives you more room.')}</p>`,
+  );
   dialog.showModal();
   el('dialog-content').scrollTop = 0;
 };
@@ -305,6 +403,7 @@ document.querySelectorAll<HTMLButtonElement>('[data-leaderboard]').forEach((butt
 });
 
 async function showLeaderboard(weekly: boolean): Promise<void> {
+  boardWeekly = weekly;
   const request = ++boardRequest;
   el('dialog-content').innerHTML =
     `<span class="release-tag">${t('HALL OF PRODUCTION')}</span><h2>${t('♜ GO LIVE HEROES')}</h2><p class="leaderboard-subtitle">${t('Una partida más. Un puesto más arriba.')}</p><div class="board-tabs"><button id="weekly" class="${weekly ? 'selected' : ''}" aria-pressed="${weekly}">${t('THIS WEEK')}</button><button id="alltime" class="${!weekly ? 'selected' : ''}" aria-pressed="${!weekly}">${t('ALL TIME')}</button></div><p id="board-notice" role="status">${t('Consultando los logs…')}</p><table class="leaderboard"><thead><tr><th>#</th><th>${t('CONSULTOR')}</th><th>${t('SCORE')}</th></tr></thead><tbody id="board-rows"></tbody></table><div class="board-footer"><span id="personal-best">${t('YOUR BEST: —')}</span><span>${weekly ? t('LUNES 00:00 UTC') : t('TODOS LOS DEPLOYS')}</span></div><p class="dialog-note">${t('Top 10 · Mejor partida por jugador · Nicknames no únicos.')}</p>`;
@@ -348,6 +447,7 @@ async function showLeaderboard(weekly: boolean): Promise<void> {
   }
   rows.forEach((row, index) => {
     const tr = document.createElement('tr');
+    tr.dataset.userContent = '';
     tr.classList.toggle('is-you', row.user_id === source.userId);
     const podium = [
       { style: 'gold', medal: '🥇', label: t('1.º puesto · Oro') },

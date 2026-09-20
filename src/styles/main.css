@@ -9,6 +9,207 @@
   --muted: #8190a6;
   --border: #233044;
 }
+.touch-option {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  letter-spacing: 0;
+  min-height: 44px;
+  margin: 12px 0;
+}
+.touch-option input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--green);
+}
+.touch-mode #nickname {
+  font-size: 16px;
+}
+.touch-hint {
+  font-size: 14px;
+  line-height: 1.6;
+  max-width: 48ch;
+  color: #b1bfd2;
+}
+.touch-controls {
+  position: absolute;
+  inset: auto 20px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+}
+.touch-stick {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  border: 2px solid #79e9f688;
+  background: #152b40b8;
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.stick-arrows {
+  color: #a6bacc;
+  font-size: 28px;
+}
+.touch-thumb {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #79e9f6ad;
+  border: 2px solid #b9f8ff;
+  pointer-events: none;
+}
+.touch-hotfix {
+  width: 108px;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 2px solid var(--cyan);
+  border-radius: 24px;
+  background: #102a3be8;
+  color: var(--cyan);
+  font-size: 16px;
+  touch-action: none;
+  user-select: none;
+}
+.touch-hotfix > span:first-child {
+  font-size: 32px;
+}
+.touch-playing {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+.touch-playing .arcade {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  border: 0;
+  border-radius: 0;
+  margin: 0;
+}
+.touch-playing .arena-toolbar,
+.touch-playing .arena-status {
+  display: none;
+}
+.touch-playing .arena-body {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  aspect-ratio: auto;
+}
+.touch-playing #game {
+  inset: 105px 0 175px;
+}
+.touch-playing .hud {
+  padding: max(12px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) 12px
+    max(14px, env(safe-area-inset-left));
+}
+.touch-playing .hud-top {
+  gap: 10px;
+}
+.touch-playing .stability-box {
+  width: 34%;
+}
+.touch-playing .timer-box {
+  position: static;
+  transform: none;
+}
+.touch-playing .timer-box strong,
+.touch-playing .score-box strong {
+  font-size: 22px;
+}
+.touch-playing .timer-box small {
+  display: none;
+}
+.touch-playing .score-box {
+  min-width: 65px;
+}
+.touch-playing .hud-label {
+  font-size: 12px;
+  letter-spacing: 0;
+}
+.touch-playing .hud-bottom {
+  inset: 90px 14px auto auto;
+}
+.touch-playing #pause {
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid #52647d;
+  background: #101b2cee;
+  border-radius: 6px;
+  font-size: 14px;
+}
+.touch-playing #pause kbd,
+.touch-playing #hotfix,
+.touch-playing .hud-bottom > span {
+  display: none;
+}
+.touch-playing #boss-bar {
+  top: 92px;
+  left: 14px;
+  transform: none;
+  width: min(55%, 300px);
+}
+.touch-playing .touch-controls {
+  bottom: max(16px, env(safe-area-inset-bottom));
+  left: max(18px, env(safe-area-inset-left));
+  right: max(18px, env(safe-area-inset-right));
+}
+.touch-playing .pause-panel {
+  padding: 20px;
+  overflow-y: auto;
+}
+.touch-playing .pause-panel h2 {
+  font-size: clamp(24px, 5vw, 39px);
+}
+.touch-mode .menu-controls {
+  display: none;
+}
+@media (orientation: landscape) {
+  .touch-playing #game {
+    inset: 55px 0 0;
+  }
+  .touch-playing .stability-track {
+    margin: 5px 0;
+    height: 6px;
+  }
+  .touch-playing #phase-label,
+  .touch-playing #combo {
+    display: none;
+  }
+  .touch-playing .stability-box {
+    width: 180px;
+  }
+  .touch-playing .hud-bottom {
+    top: 64px;
+  }
+  .touch-playing #boss-bar {
+    top: 58px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 240px;
+  }
+  .touch-playing .touch-stick {
+    width: 112px;
+    height: 112px;
+  }
+  .touch-playing .touch-hotfix {
+    width: 96px;
+    min-height: 88px;
+  }
+}
 #audio-dialog .audio-options {
   padding: 24px;
   overflow-y: auto;

@@ -20,7 +20,13 @@ Abrí la dirección que imprime Vite (normalmente http://127.0.0.1:5173). En Win
 - Llegar a 90 segundos con Stability positiva: victoria y +1000 puntos.
 - El boss anuncia su llegada al segundo 65 y aparece dos segundos después. Resolverlo da 500 puntos base; no es obligatorio para sobrevivir.
 
-Desktop es el objetivo. La arena conserva 16:9 y se ajusta a la ventana; la interfaz se adapta a pantallas pequeñas, pero no hay controles táctiles de movimiento.
+También se puede jugar desde el celular: **Controles táctiles (móvil)** se activa por defecto en dispositivos táctiles y puede cambiarse desde el inicio. La preferencia queda guardada. Arrastrá el joystick izquierdo para moverte y tocá el botón derecho para lanzar el parche; ambos admiten uso simultáneo. Los disparos siguen siendo automáticos.
+
+En modo táctil la partida ocupa la ventana, con controles grandes, pausa y opciones de audio accesibles desde la pausa. Funciona en vertical y horizontal; horizontal ofrece más espacio. La arena mantiene su proporción y el campo completo. Girar el dispositivo pausa el juego y suelta el joystick; tocá Continuar para retomar. El teclado sigue disponible.
+
+Para probar desde un celular en la misma red Wi-Fi, ejecutá `npm.cmd run dev -- --host 0.0.0.0` y abrí en el celular la dirección **Network** que muestra Vite (por ejemplo `http://192.168.1.10:5173`).
+
+La versión **1.3.1** corrige el arranque desde una IP por HTTP: los identificadores locales usan `crypto.getRandomValues()` cuando `crypto.randomUUID()` no está disponible. Antes, una primera visita en ese contexto detenía la inicialización y dejaba sin funcionar inicio, idioma y opciones de audio. Se conservan las identidades y partidas ya guardadas.
 
 ## Stack y estructura
 
@@ -139,7 +145,7 @@ También podés subir `dist/` a cualquier hosting HTTPS. No necesitás redirects
 
 ### Versión e idioma
 
-Esta actualización es la **1.2.0**. El footer toma la versión de `package.json`, incorporada al compilar con Vite: identifica el build que está ejecutando el visitante. Para una nueva entrega, actualizá la versión con `npm version patch --no-git-tag-version` (o `minor` para funcionalidades), compilá y publicá `dist/`. El número solo cambia en producción cuando se publica ese build.
+Esta actualización es la **1.3.1**. El footer toma la versión de `package.json`, incorporada al compilar con Vite: identifica el build que está ejecutando el visitante. Para una nueva entrega, actualizá la versión con `npm version patch --no-git-tag-version` (o `minor` para funcionalidades), compilá y publicá `dist/`. El número solo cambia en producción cuando se publica ese build.
 
 El selector del encabezado permite elegir Español o English desde el inicio. Guarda la preferencia en `localStorage` y recarga la interfaz conservando el apodo. Durante la partida y su resultado queda deshabilitado; volvé al inicio para cambiarlo. El idioma inicial es español. Los textos de interfaz, errores, guía, enemigos y mensajes de juego están centralizados en `src/i18n/catalog.ts`; ambas traducciones viajan con la app y funcionan sin base de datos. El nombre propio **Go Live Survivor** se conserva en ambos idiomas.
 

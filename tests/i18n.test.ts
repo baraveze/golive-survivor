@@ -11,13 +11,13 @@ describe('language preference and translated game content', () => {
     vi.stubGlobal('localStorage', { getItem: () => language });
     const i18n = await import('../src/i18n');
     const { ENEMIES, BOSS } = await import('../src/game/config/enemies');
-    const { PHASES, DEFEAT_MESSAGES } = await import('../src/game/config/messages');
+    const { PHASES, defeatMessages } = await import('../src/game/config/messages');
     const { validateNickname } = await import('../src/utils/nickname');
     expect(i18n.language).toBe(language);
     expect(ENEMIES[0].label).toBe(catalog.BUG[language === 'es' ? 0 : 1]);
     expect(BOSS.label).toBe(language === 'es' ? 'INCIDENTE EN PRODUCCIÓN' : 'PRODUCTION ISSUE');
     expect(PHASES[0].name).toBe(language === 'es' ? 'VERDE' : 'GREEN');
-    expect(DEFEAT_MESSAGES[0]).toBe(
+    expect(defeatMessages()[0]).toBe(
       language === 'es' ? 'En desarrollo funcionaba.' : 'It worked in development.',
     );
     expect(validateNickname('')).toBe(

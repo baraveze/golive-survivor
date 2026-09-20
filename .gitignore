@@ -17,6 +17,8 @@ __tests__/
 *.test.*
 !/tests/i18n.test.ts
 !/tests/music.test.ts
+!/tests/touch.test.ts
+!/tests/uuid.test.ts
 *.spec.*
 coverage/
 test-results/

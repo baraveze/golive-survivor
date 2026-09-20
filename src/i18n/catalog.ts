@@ -1,5 +1,11 @@
 // Source phrases are stable lookup keys. Both languages ship with every build.
 export const catalog: Record<string, readonly [string, string]> = {
+  'Touch controls': ['Controles táctiles (móvil)', 'Touch controls (mobile)'],
+  'Movement joystick': ['Joystick de movimiento', 'Movement joystick'],
+  'Drag the joystick to move. Tap PATCH to clear nearby enemies. Landscape gives you more room.': [
+    'Arrastrá el joystick para moverte. Tocá PARCHE para despejar enemigos cercanos. En horizontal tenés más espacio.',
+    'Drag the joystick to move. Tap PATCH to clear nearby enemies. Landscape gives you more room.',
+  ],
   'Audio options': ['Opciones de audio', 'Audio options'],
   'Enable audio': ['Activar audio (música y efectos)', 'Enable audio (music and effects)'],
   'Background music': ['Música de fondo', 'Background music'],
