@@ -129,7 +129,13 @@ También podés subir `dist/` a cualquier hosting HTTPS. No necesitás redirects
 
 ## Personalización
 
-- `src/game/config/gameConfig.ts`: nombre, subtítulo, equipo y versión. El título gráfico principal está compuesto en `src/main.ts`.
+### Versión e idioma
+
+Esta actualización es la **1.1.0**. El footer toma la versión de `package.json`, incorporada al compilar con Vite: identifica el build que está ejecutando el visitante. Para una nueva entrega, actualizá la versión con `npm version patch --no-git-tag-version` (o `minor` para funcionalidades), compilá y publicá `dist/`. El número solo cambia en producción cuando se publica ese build.
+
+El selector del encabezado permite elegir Español o English desde el inicio. Guarda la preferencia en `localStorage` y recarga la interfaz conservando el apodo. Durante la partida y su resultado queda deshabilitado; volvé al inicio para cambiarlo. El idioma inicial es español. Los textos de interfaz, errores, guía, enemigos y mensajes de juego están centralizados en `src/i18n/catalog.ts`; ambas traducciones viajan con la app y funcionan sin base de datos. El nombre propio **Go Live Survivor** se conserva en ambos idiomas.
+
+- `src/game/config/gameConfig.ts`: nombre, subtítulo y equipo; recibe la versión de `package.json`. El título gráfico principal está compuesto en `src/main.ts`.
 - `src/game/config/enemies.ts`: etiquetas, colores, estadísticas, aparición y boss.
 - `src/game/config/messages.ts`: frases de derrota, fases y easter eggs.
 - `src/game/config/balance.ts`: duración, movimiento, ataques, spawn, cooldown, límites y puntos.

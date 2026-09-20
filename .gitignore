@@ -11,9 +11,11 @@ node_modules/
 
 # Pruebas y reportes (se conservan localmente)
 /tests/
+!/tests/
 /test/
 __tests__/
 *.test.*
+!/tests/i18n.test.ts
 *.spec.*
 coverage/
 test-results/

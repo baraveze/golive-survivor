@@ -1,3 +1,4 @@
+import { t } from '../../i18n';
 import Phaser from 'phaser';
 import { BALANCE } from '../config/balance';
 import { PHASES, EASTER_EGGS } from '../config/messages';
@@ -54,9 +55,9 @@ export class GameScene extends Phaser.Scene {
     this.grid
       .lineStyle(1, 0x73edff, 0.12)
       .strokeRect(20, 20, BALANCE.width - 40, BALANCE.height - 40);
-    this.add.text(40, BALANCE.height - 37, 'PROD / eu-west / do-not-touch', {
+    this.add.text(40, BALANCE.height - 37, t('PROD / eu-west / do-not-touch'), {
       fontFamily: 'monospace',
-      fontSize: '10px',
+      fontSize: '12px',
       color: '#34445e',
     });
     this.keys = this.input.keyboard!.addKeys(
@@ -95,7 +96,7 @@ export class GameScene extends Phaser.Scene {
       .filter(
         (child) =>
           child instanceof Phaser.GameObjects.Text &&
-          child.text !== 'PROD / eu-west / do-not-touch',
+          child.text !== t('PROD / eu-west / do-not-touch'),
       )
       .forEach((child) => child.destroy());
     this.enemies = [];
@@ -175,7 +176,7 @@ export class GameScene extends Phaser.Scene {
       this.enemies.length,
       (enemy) => this.enemies.push(enemy),
       () => {
-        this.announce('⚠ PRODUCTION ISSUE ⚠', '#ff657f');
+        this.announce(t('⚠ PRODUCTION ISSUE ⚠'), '#ff657f');
         this.callbacks.audio.play('warning');
         this.cameras.main.flash(240, 110, 20, 45, false);
       },
@@ -289,7 +290,7 @@ export class GameScene extends Phaser.Scene {
     this.floatingText(enemy.x, enemy.y - 25, `+${points}`, '#beff63');
     const egg = EASTER_EGGS[enemy.definition.id];
     if (egg && Math.random() < (enemy.definition.id === 'bug' ? 0.03 : 0.22))
-      this.floatingText(enemy.x, enemy.y - 48, egg, '#9aaac2', 10);
+      this.floatingText(enemy.x, enemy.y - 48, egg, '#9aaac2', 12);
     this.callbacks.audio.play('kill');
     enemy.destroy();
   }

@@ -95,17 +95,17 @@ nav {
   gap: 27px;
 }
 .team-label {
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 1.6px;
   color: #6f7e93;
 }
 .nav-button {
-  font-size: 12px;
+  font-size: 15px;
 }
 .sound-button {
   border: 1px solid var(--border);
   padding: 9px 12px;
-  font-size: 11px;
+  font-size: 14px;
   border-radius: 4px;
   color: #abb8cb;
 }
@@ -114,7 +114,7 @@ nav {
   justify-content: space-between;
   align-items: center;
   margin: 32px 0 17px;
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 1.7px;
   color: #a5b2c6;
 }
@@ -132,7 +132,7 @@ nav {
   box-shadow: 0 0 7px #beff6330;
 }
 .eyebrow {
-  font-size: 10px;
+  font-size: 12px;
   color: #68788f;
   letter-spacing: 1.5px;
 }
@@ -149,7 +149,7 @@ nav {
   justify-content: space-between;
   padding: 0 22px;
   background: #111b2a;
-  font-size: 10px;
+  font-size: 12px;
   color: #9aaac0;
   letter-spacing: 0.3px;
 }
@@ -159,7 +159,7 @@ nav {
   align-items: center;
 }
 .terminal-icon {
-  font-size: 15px;
+  font-size: 18px;
   color: var(--cyan);
   margin-right: 10px;
 }
@@ -168,7 +168,7 @@ nav {
   color: #4f6079;
 }
 #mode {
-  font-size: 9px;
+  font-size: 12px;
   color: #91a1b7;
 }
 .live-dot {
@@ -228,7 +228,7 @@ nav {
   gap: 9px;
   letter-spacing: 1.8px;
   color: var(--green);
-  font-size: 9px;
+  font-size: 12px;
 }
 .release-tag .status-dot {
   width: 4px;
@@ -251,13 +251,13 @@ h1 > span:first-child {
   margin-left: 4px;
 }
 .subtitle {
-  font-size: 14px;
+  font-size: 17px;
   letter-spacing: -0.4px;
   color: #dce5f1;
   margin: 0 0 12px;
 }
 .intro {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--muted);
   line-height: 1.9;
   margin: 0 0 25px;
@@ -268,13 +268,13 @@ h1 > span:first-child {
 label {
   display: flex;
   justify-content: space-between;
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 1px;
   margin: 0 0 9px;
   color: #bdc8d8;
 }
 label span {
-  font-size: 8px;
+  font-size: 12px;
   color: #566982;
   letter-spacing: 0;
 }
@@ -297,7 +297,7 @@ input {
   color: #e8eef6;
   min-width: 0;
   width: 100%;
-  font-size: 12px;
+  font-size: 15px;
   height: 100%;
   outline: none;
 }
@@ -308,7 +308,7 @@ input::placeholder {
   border-color: var(--cyan);
 }
 .field-error {
-  font-size: 10px;
+  font-size: 12px;
   color: #ff8094;
   margin: 5px 0;
   min-height: 12px;
@@ -321,7 +321,7 @@ input::placeholder {
   background: var(--green);
   color: #0d1a12;
   border: 1px solid var(--green);
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 800;
   letter-spacing: 1px;
   min-height: 48px;
@@ -355,7 +355,7 @@ input::placeholder {
 }
 .menu-links button,
 .menu-links a {
-  font-size: 10px;
+  font-size: 12px;
   padding: 0;
   color: #94a5bb;
 }
@@ -418,7 +418,7 @@ input::placeholder {
   left: 50%;
   top: 28%;
   transform: translateX(-50%);
-  font-size: 8px;
+  font-size: 12px;
   white-space: nowrap;
   letter-spacing: 1px;
   color: #91aabe;
@@ -440,13 +440,13 @@ input::placeholder {
   transform: rotate(-5deg);
 }
 .enemy-card > div {
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.5px;
   white-space: nowrap;
 }
 .enemy-card > div > span {
   display: block;
-  font-size: 8px;
+  font-size: 12px;
   color: #6b7d96;
   margin-top: 6px;
   letter-spacing: 0;
@@ -496,7 +496,7 @@ input::placeholder {
   position: absolute;
   top: 65%;
   right: 10%;
-  font-size: 9px;
+  font-size: 12px;
   color: var(--cyan);
   transform: rotate(-9deg);
 }
@@ -506,7 +506,7 @@ input::placeholder {
   left: 50%;
   transform: translateX(-50%);
   white-space: nowrap;
-  font-size: 8px;
+  font-size: 12px;
   letter-spacing: 1.2px;
   color: #496177;
 }
@@ -521,7 +521,7 @@ input::placeholder {
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  font-size: 8px;
+  font-size: 12px;
   letter-spacing: 0.7px;
   color: #7890a8;
 }
@@ -542,12 +542,12 @@ kbd {
   min-width: 18px;
   padding: 3px 4px;
   text-align: center;
-  font: 9px monospace;
+  font: 12px monospace;
   color: #c0cddd;
 }
 .auto-label {
   color: #6c8197;
-  font-size: 8px;
+  font-size: 12px;
 }
 .auto-label .status-dot {
   margin-right: 5px;
@@ -560,7 +560,7 @@ kbd {
   align-items: center;
   justify-content: space-between;
   padding: 0 21px;
-  font-size: 8px;
+  font-size: 12px;
   color: #687c95;
   letter-spacing: 0.7px;
 }
@@ -590,18 +590,18 @@ kbd {
   border: 0;
 }
 .feature-number {
-  font-size: 10px;
+  font-size: 12px;
   color: #4d637e;
   padding-top: 2px;
 }
 .feature-row h3 {
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.5px;
   color: #c1ccdc;
   margin: 0 0 10px;
 }
 .feature-row p {
-  font-size: 9px;
+  font-size: 12px;
   color: #73859e;
   margin: 0;
   line-height: 1.6;
@@ -618,7 +618,7 @@ footer {
   gap: 12px 24px;
   justify-content: space-between;
   padding: 22px 0 28px;
-  font-size: 8px;
+  font-size: 12px;
   color: #53657e;
   letter-spacing: 1px;
 }
@@ -627,7 +627,7 @@ footer > span:last-child {
 }
 .footer-credits {
   flex-basis: 100%;
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.8;
   letter-spacing: 0;
   color: #9aaac2;
@@ -637,7 +637,7 @@ footer > span:last-child {
 }
 .access-notice {
   flex-basis: 100%;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.8;
   color: #9aaac2;
 }
@@ -646,7 +646,7 @@ footer > span:last-child {
   margin-left: 10px;
 }
 #connection-notice {
-  font-size: 10px;
+  font-size: 12px;
   color: #ffcf62;
   line-height: 1.6;
 }
@@ -666,7 +666,7 @@ footer > span:last-child {
   gap: 20px;
 }
 .hud-label {
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 1px;
   color: #a1b3c8;
 }
@@ -693,7 +693,7 @@ footer > span:last-child {
   transition: width 0.15s;
 }
 #phase-label {
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 1.4px;
 }
 .timer-box {
@@ -710,7 +710,7 @@ footer > span:last-child {
 }
 .timer-box small {
   color: #5e728f;
-  font-size: 12px;
+  font-size: 15px;
 }
 .score-box {
   text-align: right;
@@ -723,7 +723,7 @@ footer > span:last-child {
   margin: 3px 0;
 }
 #combo {
-  font-size: 11px;
+  font-size: 14px;
 }
 #boss-bar {
   position: absolute;
@@ -732,7 +732,7 @@ footer > span:last-child {
   transform: translateX(-50%);
   width: 300px;
   text-align: center;
-  font-size: 10px;
+  font-size: 12px;
   color: #ff657f;
 }
 #boss-bar > div {
@@ -754,14 +754,14 @@ footer > span:last-child {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 9px;
+  font-size: 12px;
   color: #677f98;
 }
 .hud button {
   pointer-events: auto;
 }
 #pause {
-  font-size: 9px;
+  font-size: 12px;
   color: #90a2b9;
 }
 #pause kbd {
@@ -772,7 +772,7 @@ footer > span:last-child {
   border: 1px solid #557e86;
   background: #101e2de8;
   color: var(--cyan);
-  font-size: 11px;
+  font-size: 14px;
   padding: 13px 20px;
   display: flex;
   align-items: center;
@@ -824,7 +824,7 @@ footer > span:last-child {
   color: var(--green);
 }
 #result-message {
-  font-size: 12px;
+  font-size: 15px;
   color: #9dacc1;
 }
 .result-score {
@@ -834,7 +834,7 @@ footer > span:last-child {
   margin: 23px 0 10px;
 }
 .result-score > span {
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 2px;
   color: #788ba6;
 }
@@ -844,7 +844,7 @@ footer > span:last-child {
   letter-spacing: -3px;
 }
 .survival-bonus {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--green);
   margin: 8px 0;
 }
@@ -862,19 +862,19 @@ footer > span:last-child {
   gap: 10px;
 }
 .result-stats span {
-  font-size: 8px;
+  font-size: 12px;
   color: #6c819c;
 }
 .result-stats strong {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 400;
 }
 .result-stats > div:last-child strong {
-  font-size: 11px;
+  font-size: 14px;
   color: var(--cyan);
 }
 #save-status {
-  font-size: 9px;
+  font-size: 12px;
   color: #91a8c2;
   min-height: 12px;
   margin: 16px 0 21px;
@@ -896,7 +896,7 @@ footer > span:last-child {
   margin: 7px 0;
 }
 .pause-panel p {
-  font-size: 12px;
+  font-size: 15px;
   color: #95a6bd;
 }
 .pause-panel .primary {
@@ -911,7 +911,7 @@ footer > span:last-child {
   border: 1px solid #714153;
   border-radius: 3px;
   color: #ff96a8;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.6;
 }
 .cancel-run:hover {
@@ -921,7 +921,7 @@ footer > span:last-child {
 }
 .pause-panel .cancel-note {
   margin: 0;
-  font-size: 10px;
+  font-size: 12px;
 }
 .enemy-guide {
   border-top: 1px solid var(--border);
@@ -942,14 +942,14 @@ footer > span:last-child {
   margin: 12px 0 0;
 }
 .enemy-guide-heading > a {
-  font-size: 9px;
+  font-size: 12px;
   color: var(--cyan);
   padding: 12px 0;
 }
 .enemy-guide-intro,
 .enemy-guide-note {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.8;
 }
 .enemy-guide-intro {
@@ -957,7 +957,7 @@ footer > span:last-child {
 }
 .enemy-guide-note {
   margin: 18px 0 0;
-  font-size: 10px;
+  font-size: 12px;
 }
 .enemy-guide-grid {
   display: grid;
@@ -996,14 +996,14 @@ footer > span:last-child {
 }
 .enemy-profile-spawn {
   display: block;
-  font-size: 8px;
+  font-size: 12px;
   line-height: 1.6;
   letter-spacing: 0.7px;
   color: var(--muted);
 }
 .enemy-profile h3 {
   margin: 6px 0 0;
-  font-size: 13px;
+  font-size: 16px;
   line-height: 1.5;
   color: var(--enemy-color);
   overflow-wrap: anywhere;
@@ -1011,36 +1011,37 @@ footer > span:last-child {
 .enemy-profile-description {
   flex: 1;
   margin: 19px 0;
-  font-size: 11px;
+  font-size: 14px;
   line-height: 1.8;
   color: #b1bfd2;
 }
 .enemy-profile-stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr) minmax(0, 1fr);
   gap: 8px;
   margin: 0;
   padding: 16px 0;
   border-block: 1px solid var(--border);
 }
 .enemy-profile-stats dt {
-  font-size: 8px;
+  font-size: 12px;
   color: var(--muted);
 }
 .enemy-profile-stats dd {
-  font-size: 13px;
+  font-size: 16px;
   margin: 9px 0 0;
+  overflow-wrap: anywhere;
 }
 .enemy-profile-tip {
   margin: 16px 0 0;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.8;
   color: #a0b2c9;
 }
 .enemy-profile-tip > span:first-child {
   display: block;
   color: var(--enemy-color);
-  font-size: 8px;
+  font-size: 12px;
   letter-spacing: 0.7px;
   margin-bottom: 5px;
 }
@@ -1140,7 +1141,7 @@ dialog::backdrop {
   overflow-wrap: anywhere;
 }
 .dialog-heading .eyebrow {
-  font-size: 8px;
+  font-size: 12px;
 }
 dialog h2 {
   font-family: 'Arial Black', 'Segoe UI', sans-serif;
@@ -1149,7 +1150,7 @@ dialog h2 {
   margin: 12px 0;
 }
 dialog p {
-  font-size: 11px;
+  font-size: 14px;
   color: #91a4bd;
   line-height: 1.8;
 }
@@ -1161,11 +1162,11 @@ dialog p {
 .instructions b {
   display: block;
   color: var(--cyan);
-  font-size: 11px;
+  font-size: 14px;
   margin-bottom: 6px;
 }
 .dialog-note {
-  font-size: 9px !important;
+  font-size: 12px !important;
   color: #576f8c !important;
 }
 .board-tabs {
@@ -1177,7 +1178,7 @@ dialog p {
   flex: 1;
   min-width: 0;
   padding: 12px 8px;
-  font-size: 11px;
+  font-size: 14px;
   color: #8298b2;
   border-bottom: 2px solid transparent;
 }
@@ -1186,17 +1187,17 @@ dialog p {
   border-bottom-color: var(--green);
 }
 #board-notice {
-  font-size: 9px;
+  font-size: 12px;
 }
 .leaderboard {
   width: 100%;
   table-layout: fixed;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: 15px;
 }
 .leaderboard th {
   text-align: left;
-  font-size: 8px;
+  font-size: 12px;
   color: #667e9b;
   letter-spacing: 1px;
   padding: 14px 10px;
@@ -1261,7 +1262,7 @@ dialog p {
   gap: 10px 16px;
   justify-content: space-between;
   padding: 20px 0 10px;
-  font-size: 9px;
+  font-size: 12px;
   color: #607b9d;
 }
 #personal-best {
@@ -1321,13 +1322,13 @@ dialog p {
     margin: 15px 0;
   }
   .release-tag {
-    font-size: 8px;
+    font-size: 12px;
   }
   .subtitle {
-    font-size: 11px;
+    font-size: 14px;
   }
   .intro {
-    font-size: 9px;
+    font-size: 12px;
     margin: 0 0 13px;
   }
   .input-wrap {
@@ -1335,7 +1336,7 @@ dialog p {
   }
   .primary {
     min-height: 42px;
-    font-size: 10px;
+    font-size: 12px;
   }
   .menu-links {
     margin-top: 13px;
@@ -1348,10 +1349,10 @@ dialog p {
     gap: 8px;
   }
   .enemy-card > div {
-    font-size: 8px;
+    font-size: 12px;
   }
   .enemy-card > div > span {
-    font-size: 7px;
+    font-size: 12px;
   }
   .enemy-card > i {
     display: none;
@@ -1377,7 +1378,7 @@ dialog p {
     display: none;
   }
   .menu-controls {
-    font-size: 7px;
+    font-size: 12px;
   }
   .feature-row {
     gap: 18px;
@@ -1386,7 +1387,7 @@ dialog p {
     display: none;
   }
   .feature-row h3 {
-    font-size: 9px;
+    font-size: 12px;
   }
   .result h2 {
     font-size: 32px;
@@ -1426,7 +1427,7 @@ dialog p {
     margin-top: 15px;
   }
   .hero-caption {
-    font-size: 6px;
+    font-size: 12px;
   }
   .team-label {
     display: none;
@@ -1443,7 +1444,7 @@ dialog p {
     height: 76px;
   }
   .brand {
-    font-size: 13px;
+    font-size: 16px;
     gap: 8px;
   }
   .brand-icon {
@@ -1455,13 +1456,13 @@ dialog p {
     gap: 10px;
   }
   .nav-button {
-    font-size: 10px;
+    font-size: 12px;
   }
   .nav-button span {
     display: none;
   }
   .section-heading {
-    font-size: 8px;
+    font-size: 12px;
     margin-top: 22px;
   }
   .section-heading .eyebrow {
@@ -1488,10 +1489,10 @@ dialog p {
     font-size: 64px;
   }
   .subtitle {
-    font-size: 12px;
+    font-size: 15px;
   }
   .intro {
-    font-size: 10px;
+    font-size: 12px;
     margin-bottom: 20px;
   }
   .menu-controls {
@@ -1503,7 +1504,7 @@ dialog p {
   }
   .arena-toolbar {
     padding: 0 14px;
-    font-size: 9px;
+    font-size: 12px;
   }
   .arena-status {
     padding: 0 12px;
@@ -1522,16 +1523,16 @@ dialog p {
     padding: 16px 0;
   }
   .feature-row h3 {
-    font-size: 10px;
+    font-size: 12px;
   }
   .feature-row p {
-    font-size: 10px;
+    font-size: 12px;
   }
   .feature-icon {
     display: block;
   }
   footer {
-    font-size: 7px;
+    font-size: 12px;
     gap: 18px;
     line-height: 1.8;
   }
@@ -1539,7 +1540,7 @@ dialog p {
     padding: 14px;
   }
   .hud-label {
-    font-size: 8px;
+    font-size: 12px;
   }
   .stability-box {
     width: 120px;
@@ -1551,7 +1552,7 @@ dialog p {
     font-size: 16px;
   }
   .timer-box small {
-    font-size: 9px;
+    font-size: 12px;
   }
   .hud-bottom {
     left: 14px;
@@ -1563,10 +1564,10 @@ dialog p {
   }
   #hotfix {
     padding: 10px;
-    font-size: 9px;
+    font-size: 12px;
   }
   #pause {
-    font-size: 8px;
+    font-size: 12px;
   }
   #pause kbd {
     display: none;
@@ -1578,13 +1579,13 @@ dialog p {
     gap: 6px;
   }
   .result-stats span {
-    font-size: 7px;
+    font-size: 12px;
   }
   .result-stats strong {
-    font-size: 13px;
+    font-size: 16px;
   }
   .result-stats > div:last-child strong {
-    font-size: 8px;
+    font-size: 12px;
   }
   .result-score > strong {
     font-size: 56px;
@@ -1602,7 +1603,7 @@ dialog p {
     gap: 10px;
   }
   .board-footer {
-    font-size: 8px;
+    font-size: 12px;
     gap: 12px;
   }
 }
@@ -1637,7 +1638,137 @@ dialog p {
     display: none;
   }
   .menu-controls > span {
-    font-size: 6px;
+    font-size: 12px;
     gap: 3px;
+  }
+}
+
+/* Readable controls and flexible layouts for both languages. */
+.language-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 13px;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+.language-control select {
+  color: #e8eef6;
+  background: #101b2c;
+  border: 1px solid #52647d;
+  border-radius: 5px;
+  padding: 8px;
+  font: inherit;
+  min-height: 40px;
+}
+.language-control select:disabled {
+  opacity: 0.65;
+}
+.language-control select:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
+.intro,
+.feature-row p,
+.enemy-profile-description,
+.enemy-profile-tip,
+.enemy-guide-intro,
+.instructions p {
+  font-size: 16px;
+  line-height: 1.65;
+}
+.menu-links,
+.menu-links button,
+.menu-links a,
+.primary,
+input,
+.board-tabs button {
+  font-size: 15px;
+}
+.menu-controls {
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-block: 12px;
+}
+.menu {
+  grid-template-rows: 1fr auto;
+  overflow-y: auto;
+}
+.arena-body {
+  min-height: 670px;
+}
+.arena-toolbar,
+.arena-status {
+  height: auto;
+  min-height: 45px;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-block: 10px;
+}
+.result {
+  overflow-y: auto;
+}
+.result-card {
+  max-width: 100%;
+}
+.result h2 {
+  font-size: clamp(24px, 3vw, 39px);
+  overflow-wrap: anywhere;
+}
+footer {
+  flex-wrap: wrap;
+  gap: 16px;
+}
+#footer-version {
+  color: var(--green);
+  white-space: nowrap;
+  font-size: 14px;
+}
+@media (max-width: 1100px) {
+  .team-label {
+    display: none;
+  }
+  .menu {
+    padding-inline: 24px;
+  }
+  .hero-art {
+    transform: scale(0.85);
+  }
+}
+@media (max-width: 800px) {
+  .site-header {
+    height: auto;
+    min-height: 100px;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding-block: 18px;
+  }
+  .site-header nav {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .arena-body {
+    min-height: 730px;
+  }
+  .menu {
+    padding: 24px 20px 0;
+  }
+  .menu-controls > span {
+    font-size: 12px;
+    flex-wrap: wrap;
+  }
+  .menu-controls {
+    align-content: center;
+  }
+  .hud-bottom {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .result-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .result-card {
+    padding: 22px 16px;
   }
 }

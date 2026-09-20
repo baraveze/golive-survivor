@@ -1,3 +1,4 @@
+import { t } from '../../i18n';
 import Phaser from 'phaser';
 import type { EnemyDefinition } from '../config/enemies';
 export class Enemy extends Phaser.GameObjects.Container {
@@ -26,7 +27,7 @@ export class Enemy extends Phaser.GameObjects.Container {
     const label = scene.add
       .text(0, s + 13, definition.label, {
         fontFamily: 'monospace',
-        fontSize: definition.id === 'boss' ? '14px' : '10px',
+        fontSize: definition.id === 'boss' ? '16px' : '12px',
         color: '#b6c4d7',
         backgroundColor: '#080e18',
       })
@@ -35,7 +36,7 @@ export class Enemy extends Phaser.GameObjects.Container {
     if (definition.id === 'integration') {
       this.add(
         scene.add
-          .text(0, s + 26, Phaser.Utils.Array.GetRandom(['SAP', 'LEGACY', 'ERP', 'API']), {
+          .text(0, s + 26, Phaser.Utils.Array.GetRandom(['SAP', t('LEGACY'), 'ERP', 'API']), {
             fontFamily: 'monospace',
             fontSize: '9px',
             color: '#5bcaff',
