@@ -20,7 +20,13 @@ Abrí la dirección que imprime Vite (normalmente http://127.0.0.1:5173). En Win
 - Llegar a 90 segundos con Stability positiva: victoria y +1000 puntos.
 - El boss anuncia su llegada al segundo 65 y aparece dos segundos después. Resolverlo da 500 puntos base; no es obligatorio para sobrevivir.
 
-Desktop es el objetivo. La arena conserva 16:9 y se ajusta a la ventana; la interfaz se adapta a pantallas pequeñas, pero no hay controles táctiles de movimiento.
+También se puede jugar desde el celular: **Controles táctiles (móvil)** se activa por defecto en dispositivos táctiles y puede cambiarse desde el inicio. La preferencia queda guardada. Arrastrá el joystick izquierdo para moverte y tocá el botón derecho para lanzar el parche; ambos admiten uso simultáneo. Los disparos siguen siendo automáticos.
+
+En modo táctil la partida ocupa la ventana, con controles grandes, pausa y opciones de audio accesibles desde la pausa. Funciona en vertical y horizontal; horizontal ofrece más espacio. La arena mantiene su proporción y el campo completo. Girar el dispositivo pausa el juego y suelta el joystick; tocá Continuar para retomar. El teclado sigue disponible.
+
+Para probar desde un celular en la misma red Wi-Fi, ejecutá `npm.cmd run dev -- --host 0.0.0.0` y abrí en el celular la dirección **Network** que muestra Vite (por ejemplo `http://192.168.1.10:5173`).
+
+La versión **1.3.1** corrige el arranque desde una IP por HTTP: los identificadores locales usan `crypto.getRandomValues()` cuando `crypto.randomUUID()` no está disponible. Antes, una primera visita en ese contexto detenía la inicialización y dejaba sin funcionar inicio, idioma y opciones de audio. Se conservan las identidades y partidas ya guardadas.
 
 ## Stack y estructura
 
@@ -100,7 +106,15 @@ Para verificar la integración en tu proyecto: jugá una partida, comprobá la f
 - El score es calculado client-side. El MVP evita manipulación accidental, pero no intenta impedir cheating deliberado.
 - Las versiones están fijadas en `package.json` y `package-lock.json`. Usá `npm ci` para instalaciones reproducibles y `npm audit` al actualizar. Un audit sin avisos no garantiza la ausencia de vulnerabilidades desconocidas.
 
-No hay analytics, telemetría ni solicitudes externas en Local Mode. Los gráficos son formas Phaser, CSS y SVG originales, sin logos ni imágenes de terceros. Los sonidos se sintetizan con Web Audio después de un gesto del usuario, sin descargas ni licencias externas. Se priorizó el apartado 31 de la especificación ante la indicación anterior de descargar audio público.
+No hay analytics, telemetría ni solicitudes externas en Local Mode. Los gráficos son formas Phaser, CSS y SVG originales, sin logos ni imágenes de terceros. Los efectos se sintetizan con Web Audio después de un gesto del usuario. La música se sirve desde `public/audio/`, junto con la aplicación, sin servicios de streaming.
+
+## Música y opciones de audio
+
+El inicio y los resultados reproducen **Dream Culture**; durante la partida suena **Bit Quest**, ambas de **Kevin MacLeod (incompetech.com)** bajo [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Las grabaciones originales están sin modificar y se reproducen en bucle a volumen reducido. Las fuentes, licencia y atribuciones están en [public/audio/README.md](public/audio/README.md) y en las opciones de audio de la app.
+
+La música empieza después de la primera interacción, respetando las restricciones de reproducción automática del navegador. Se pausa al pausar la partida o esconder la pestaña. Al regresar a una partida pausada, hay que continuarla explícitamente. Abrir **Opciones de audio** durante el juego lo pausa.
+
+Desde ese botón del encabezado se puede desactivar **Música de fondo** sin quitar los efectos, o desactivar **Activar audio** para silenciar todo. Se guardan las preferencias `gls:music` y `gls:sound` en el navegador. Los MP3 se cargan cuando corresponde reproducirlos, no antes de la primera interacción. Si el navegador bloquea audio o falla la carga, la partida sigue funcionando.
 
 ## Validación
 
@@ -129,7 +143,13 @@ También podés subir `dist/` a cualquier hosting HTTPS. No necesitás redirects
 
 ## Personalización
 
-- `src/game/config/gameConfig.ts`: nombre, subtítulo, equipo y versión. El título gráfico principal está compuesto en `src/main.ts`.
+### Versión e idioma
+
+Esta actualización es la **1.3.1**. El footer toma la versión de `package.json`, incorporada al compilar con Vite: identifica el build que está ejecutando el visitante. Para una nueva entrega, actualizá la versión con `npm version patch --no-git-tag-version` (o `minor` para funcionalidades), compilá y publicá `dist/`. El número solo cambia en producción cuando se publica ese build.
+
+El selector del encabezado permite elegir Español o English desde el inicio. Guarda la preferencia en `localStorage` y recarga la interfaz conservando el apodo. Durante la partida y su resultado queda deshabilitado; volvé al inicio para cambiarlo. El idioma inicial es español. Los textos de interfaz, errores, guía, enemigos y mensajes de juego están centralizados en `src/i18n/catalog.ts`; ambas traducciones viajan con la app y funcionan sin base de datos. El nombre propio **Go Live Survivor** se conserva en ambos idiomas.
+
+- `src/game/config/gameConfig.ts`: nombre, subtítulo y equipo; recibe la versión de `package.json`. El título gráfico principal está compuesto en `src/main.ts`.
 - `src/game/config/enemies.ts`: etiquetas, colores, estadísticas, aparición y boss.
 - `src/game/config/messages.ts`: frases de derrota, fases y easter eggs.
 - `src/game/config/balance.ts`: duración, movimiento, ataques, spawn, cooldown, límites y puntos.

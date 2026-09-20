@@ -1,3 +1,4 @@
+import { t, translateText, type Language } from '../../i18n';
 import Phaser from 'phaser';
 import { BALANCE } from '../config/balance';
 import { PHASES, EASTER_EGGS } from '../config/messages';
@@ -41,6 +42,30 @@ export class GameScene extends Phaser.Scene {
   private ended = false;
   private paused = false;
   private activeRun = false;
+  private touchX = 0;
+  private touchY = 0;
+  private mobileView = false;
+  private arenaFooter?: Phaser.GameObjects.Text;
+  setMobileView(enabled: boolean): void {
+    this.mobileView = enabled;
+    if (!this.cameras?.main) return;
+    const camera = this.cameras.main;
+    camera.setBounds(0, 0, BALANCE.width, BALANCE.height);
+    camera.setZoom(enabled ? 1.5 : 1);
+    if (enabled && this.player?.active) camera.startFollow(this.player, true, 1, 1);
+    else { camera.stopFollow(); camera.centerOn(BALANCE.width / 2, BALANCE.height / 2); }
+  }
+  refreshLanguage(from: Language): void {
+    const visit = (child: Phaser.GameObjects.GameObject) => {
+      if (child instanceof Phaser.GameObjects.Text) child.setText(translateText(child.text, from));
+      if (child instanceof Phaser.GameObjects.Container) child.list.forEach(visit);
+    };
+    this.children?.list.forEach(visit);
+  }
+  setTouchMovement(x: number, y: number): void {
+    this.touchX = x;
+    this.touchY = y;
+  }
   private announcement?: Phaser.GameObjects.Text;
   private grid!: Phaser.GameObjects.Graphics;
   constructor(private callbacks: GameCallbacks) {
@@ -54,9 +79,9 @@ export class GameScene extends Phaser.Scene {
     this.grid
       .lineStyle(1, 0x73edff, 0.12)
       .strokeRect(20, 20, BALANCE.width - 40, BALANCE.height - 40);
-    this.add.text(40, BALANCE.height - 37, 'PROD / eu-west / do-not-touch', {
+    this.arenaFooter = this.add.text(40, BALANCE.height - 37, t('PROD / eu-west / do-not-touch'), {
       fontFamily: 'monospace',
-      fontSize: '10px',
+      fontSize: '12px',
       color: '#34445e',
     });
     this.keys = this.input.keyboard!.addKeys(
@@ -85,6 +110,7 @@ export class GameScene extends Phaser.Scene {
     this.player = new Player(this, BALANCE.width * 0.52, BALANCE.height * 0.47);
   }
   private clearRunObjects(): void {
+    this.setTouchMovement(0, 0);
     this.tweens.killAll();
     this.time.removeAllEvents();
     this.children.list
@@ -95,7 +121,7 @@ export class GameScene extends Phaser.Scene {
       .filter(
         (child) =>
           child instanceof Phaser.GameObjects.Text &&
-          child.text !== 'PROD / eu-west / do-not-touch',
+          child !== this.arenaFooter,
       )
       .forEach((child) => child.destroy());
     this.enemies = [];
@@ -129,6 +155,7 @@ export class GameScene extends Phaser.Scene {
     this.activeRun = true;
     this.announcement = undefined;
     this.player = new Player(this, BALANCE.width / 2, BALANCE.height / 2);
+    this.setMobileView(this.mobileView);
     this.spawner = new EnemySpawner(this);
     this.input.keyboard!.enabled = true;
     this.input.keyboard!.addCapture('UP,DOWN,LEFT,RIGHT,SPACE');
@@ -141,6 +168,7 @@ export class GameScene extends Phaser.Scene {
   togglePause(): void {
     if (!this.activeRun || this.ended) return;
     this.paused = !this.paused;
+    this.setTouchMovement(0, 0);
     this.tweens.timeScale = this.paused ? 0 : 1;
     this.time.paused = this.paused;
     this.input.keyboard!.resetKeys();
@@ -165,17 +193,19 @@ export class GameScene extends Phaser.Scene {
     }
     const dx =
       Number(this.keys.D.isDown || this.keys.RIGHT.isDown) -
-      Number(this.keys.A.isDown || this.keys.LEFT.isDown);
+      Number(this.keys.A.isDown || this.keys.LEFT.isDown) +
+      this.touchX;
     const dy =
       Number(this.keys.S.isDown || this.keys.DOWN.isDown) -
-      Number(this.keys.W.isDown || this.keys.UP.isDown);
+      Number(this.keys.W.isDown || this.keys.UP.isDown) +
+      this.touchY;
     this.player.move(dx, dy, dt, this.elapsed);
     this.spawner.update(
       this.elapsed,
       this.enemies.length,
       (enemy) => this.enemies.push(enemy),
       () => {
-        this.announce('⚠ PRODUCTION ISSUE ⚠', '#ff657f');
+        this.announce(t('⚠ PRODUCTION ISSUE ⚠'), '#ff657f');
         this.callbacks.audio.play('warning');
         this.cameras.main.flash(240, 110, 20, 45, false);
       },
@@ -289,7 +319,7 @@ export class GameScene extends Phaser.Scene {
     this.floatingText(enemy.x, enemy.y - 25, `+${points}`, '#beff63');
     const egg = EASTER_EGGS[enemy.definition.id];
     if (egg && Math.random() < (enemy.definition.id === 'bug' ? 0.03 : 0.22))
-      this.floatingText(enemy.x, enemy.y - 48, egg, '#9aaac2', 10);
+      this.floatingText(enemy.x, enemy.y - 48, egg, '#9aaac2', 12);
     this.callbacks.audio.play('kill');
     enemy.destroy();
   }
@@ -332,7 +362,7 @@ export class GameScene extends Phaser.Scene {
       this.announcement.destroy();
     }
     this.announcement = this.add
-      .text(BALANCE.width / 2, 100, text, {
+      .text(BALANCE.width / (2 * this.cameras.main.zoom), 100 / this.cameras.main.zoom, text, {
         fontFamily: 'monospace',
         fontSize: '23px',
         fontStyle: 'bold',
@@ -341,6 +371,8 @@ export class GameScene extends Phaser.Scene {
         padding: { x: 24, y: 14 },
       })
       .setOrigin(0.5)
+      .setScrollFactor(0)
+      .setScale(1 / this.cameras.main.zoom)
       .setDepth(10);
     const label = this.announcement;
     this.tweens.add({

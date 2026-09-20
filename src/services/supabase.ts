@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { createClient } from '@supabase/supabase-js';
 import { LocalScoreRepository } from './score/LocalScoreRepository';
 import { SupabaseScoreRepository } from './score/SupabaseScoreRepository';
@@ -50,7 +51,7 @@ export async function createScoreRepository(): Promise<{
   } catch {
     return {
       repository: local,
-      notice: 'No pudimos conectar el ranking. Podés jugar y guardar tus partidas localmente.',
+      notice: t('No pudimos conectar el ranking. Podés jugar y guardar tus partidas localmente.'),
     };
   }
 }

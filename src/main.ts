@@ -1,6 +1,8 @@
+import { t, language, locale, setLanguage } from './i18n';
+import { translateInterface } from './i18n/dom';
 import './styles/main.css';
 import { GAME_CONFIG } from './game/config/gameConfig';
-import { DEFEAT_MESSAGES, PHASES } from './game/config/messages';
+import { defeatMessages, PHASES } from './game/config/messages';
 import { createGame } from './game/Game';
 import type { HudState } from './game/scenes/GameScene';
 import { AudioService } from './services/AudioService';
@@ -10,83 +12,216 @@ import type { ScoreRepository, ScoreSubmission } from './services/score/ScoreRep
 import { sanitizeNickname, validateNickname } from './utils/nickname';
 import { storage } from './utils/storage';
 import { renderEnemyGuide } from './ui/enemyGuide';
+import { TouchControls } from './ui/TouchControls';
 
+document.documentElement.lang = language;
 const app = document.querySelector<HTMLDivElement>('#app')!;
 app.innerHTML = `
   <header class="site-header">
-    <a class="brand" href="./" aria-label="Go Live Survivor, inicio"><span class="brand-icon">ϟ</span><span>GO LIVE<span class="brand-light"> SURVIVOR</span></span></a>
-    <nav aria-label="Principal"><span class="team-label"></span><button class="nav-button" data-leaderboard>♜ <span>Leaderboard</span></button><button id="sound" class="sound-button" aria-label="Desactivar sonido"></button></nav>
+    <a class="brand" href="./" aria-label="${t('Go Live Survivor, inicio')}"><span class="brand-icon">ϟ</span><span>GO LIVE<span class="brand-light"> SURVIVOR</span></span></a>
+    <nav aria-label="${t('Principal')}"><span class="team-label"></span><label class="language-control" for="language">${t('Language')}<select id="language"><option value="es" lang="es">Español</option><option value="en" lang="en">English</option></select></label><button class="nav-button" data-leaderboard>♜ <span>${t('Leaderboard')}</span></button><button id="sound" class="sound-button" aria-label="${t('Desactivar sonido')}"></button></nav>
   </header>
   <main>
-    <div class="section-heading"><span><i class="status-dot"></i> THE FINAL DEPLOYMENT</span><span class="eyebrow">ARCADE / SURVIVAL / 90 SECONDS</span></div>
+    <div class="section-heading"><span><i class="status-dot"></i> ${t('THE FINAL DEPLOYMENT')}</span><span class="eyebrow">${t('ARCADE / SURVIVAL / 90 SECONDS')}</span></div>
     <section class="arcade" aria-label="Go Live Survivor">
-      <div class="arena-toolbar"><span><span class="terminal-icon">&gt;_</span> production.survivor <span class="muted">/ session</span></span><div><span id="mode">LOCAL MODE</span><span class="toolbar-divider">/</span><span class="live-dot"></span> LIVE</div></div>
+      <div class="arena-toolbar"><span><span class="terminal-icon">&gt;_</span> production.survivor <span class="muted">${t('/ session')}</span></span><div><span id="mode">${t('LOCAL MODE')}</span><span class="toolbar-divider">/</span><span class="live-dot"></span> ${t('LIVE')}</div></div>
       <div class="arena-body">
-        <div id="game" aria-label="Arena de juego. WASD o flechas para moverte; espacio para Hotfix." tabindex="-1"></div>
+        <div id="game" aria-label="${t('Arena de juego. WASD o flechas para moverte; espacio para Hotfix.')}" tabindex="-1"></div>
         <section id="menu" class="menu overlay">
-          <div class="menu-copy"><span class="release-tag"><i class="status-dot"></i> PRODUCTION IS CALLING</span><h1>GO LIVE<br><span>SURVIVOR</span><span class="title-dot">_</span></h1><p class="subtitle"></p><p class="intro">Bugs, flows rotos y un Excel de 70.000 filas.<br>Un consultor. Cero margen de error.</p>
-            <form id="start-form" novalidate><label for="nickname">TU NICKNAME <span>QUE QUEDE EN LOS LOGS.</span></label><div class="input-wrap"><span>&gt;</span><input id="nickname" name="nickname" placeholder="Tu alias en producción" maxlength="18" autocomplete="nickname" required aria-describedby="nickname-error"></div><p id="nickname-error" class="field-error" aria-live="polite"></p><button id="start" class="primary" type="submit" disabled>INICIAR GO LIVE <span>→</span></button></form>
-            <div class="menu-links"><button data-leaderboard>♜ Leaderboard</button><span>·</span><button id="how-to">Cómo jugar ↗</button><span>·</span><a href="#enemies">Enemigos ↓</a></div>
+          <div class="menu-copy"><span class="release-tag"><i class="status-dot"></i> ${t('PRODUCTION IS CALLING')}</span><h1>GO LIVE<br><span>SURVIVOR</span><span class="title-dot">_</span></h1><p class="subtitle"></p><p class="intro">${t('Bugs, flows rotos y un Excel de 70.000 filas.')}<br>${t('Un consultor. Cero margen de error.')}</p>
+            <form id="start-form" novalidate><label for="nickname">${t('TU NICKNAME')} <span>${t('QUE QUEDE EN LOS LOGS.')}</span></label><div class="input-wrap"><span>&gt;</span><input id="nickname" name="nickname" placeholder="${t('Tu alias en producción')}" maxlength="18" autocomplete="nickname" required aria-describedby="nickname-error"></div><p id="nickname-error" class="field-error" aria-live="polite"></p><button id="start" class="primary" type="submit" disabled>${t('INICIAR GO LIVE')} <span>→</span></button></form>
+            <div class="menu-links"><button data-leaderboard>${t('♜ Leaderboard')}</button><span>·</span><button id="how-to">${t('Cómo jugar ↗')}</button><span>·</span><a href="#enemies">${t('Enemigos ↓')}</a></div>
           </div>
-          <div class="hero-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="orbit-cross"></div><div class="hero-tag">CONSULTANT_01 <span>ONLINE</span></div>
+          <div class="hero-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="orbit-cross"></div><div class="hero-tag">${t('CONSULTANT_01')} <span>${t('ONLINE')}</span></div>
             <svg class="hero-robot" viewBox="0 0 180 200"><ellipse cx="90" cy="178" rx="56" ry="12" fill="#000" opacity=".4"/><path d="M89 31V16" stroke="#79e9f6" stroke-width="5"/><rect x="83" y="6" width="13" height="13" rx="3" fill="#beff63"/><path d="M47 118h86v37H47z" fill="#285469"/><path d="M53 149h28v25H53zm46 0h28v25H99z" fill="#5ac7d9"/><path d="M32 89h18v47H32zm98 0h18v47h-18z" fill="#3d8399"/><rect x="42" y="34" width="96" height="91" rx="14" fill="#81ecf5"/><path d="M42 106h96v12q0 9-10 9H52q-10 0-10-9z" fill="#46a6bc"/><rect x="54" y="56" width="72" height="37" rx="8" fill="#10253a"/><path d="M65 66h12v13H65zm38 0h12v13h-12z" fill="#d9ffff"/><rect x="80" y="102" width="20" height="7" rx="1" fill="#beff63"/><path d="M149 62h17m-8-9v18" stroke="#beff63" stroke-width="3"/></svg>
-            <div class="enemy-card card-bug"><span class="enemy-symbol green">!</span><div>BUG<span>“En DEV funcionaba.”</span></div><i></i></div>
-            <div class="enemy-card card-flow"><span class="enemy-symbol yellow">ϟ</span><div>FLOW FAILED<span>Last run: a disaster</span></div><i></i></div>
-            <div class="enemy-card card-excel"><span class="enemy-symbol mint">X</span><div>EXCEL 70K ROWS<span>final_final_v8.xlsx</span></div><i></i></div>
-            <span class="fix-label">+ FIX DEPLOYED</span><span class="hero-caption">ALL SYSTEMS <span>PROBABLY</span> OPERATIONAL</span>
+            <div class="enemy-card card-bug"><span class="enemy-symbol green">!</span><div>${t('BUG')}<span>${t('“En DEV funcionaba.”')}</span></div><i></i></div>
+            <div class="enemy-card card-flow"><span class="enemy-symbol yellow">ϟ</span><div>${t('FLOW FAILED')}<span>${t('Last run: a disaster')}</span></div><i></i></div>
+            <div class="enemy-card card-excel"><span class="enemy-symbol mint">X</span><div>${t('EXCEL 70K ROWS')}<span>final_final_v8.xlsx</span></div><i></i></div>
+            <span class="fix-label">${t('+ FIX DEPLOYED')}</span><span class="hero-caption">${t('ALL SYSTEMS')} <span>${t('PROBABLY')}</span> ${t('OPERATIONAL')}</span>
           </div>
-          <div class="menu-controls"><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / <kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd> <span>MOVERTE</span></span><span><kbd>SPACE</kbd> EMERGENCY HOTFIX</span><span class="auto-label"><i class="status-dot"></i> AUTO-FIX ENABLED</span></div>
+          <div class="menu-controls"><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / <kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd> <span>${t('MOVERTE')}</span></span><span><kbd>${t('SPACE')}</kbd> ${t('EMERGENCY HOTFIX')}</span><span class="auto-label"><i class="status-dot"></i> ${t('AUTO-FIX ENABLED')}</span></div>
         </section>
-        <section id="hud" class="hud" hidden aria-label="Estado de la partida"><div class="hud-top"><div class="stability-box"><div class="hud-label">SYSTEM STABILITY <strong id="stability-value">100%</strong></div><div class="stability-track"><div id="stability-fill"></div></div><span id="phase-label">● PHASE GREEN</span></div><div class="timer-box"><span class="hud-label">GO LIVE</span><strong id="timer">00:00 <small>/ 01:30</small></strong></div><div class="score-box"><span class="hud-label">SCORE</span><strong id="score">0</strong><span id="combo">COMBO x1</span></div></div><div id="boss-bar" hidden><span>⚠ PRODUCTION ISSUE</span><div><i id="boss-fill"></i></div></div><div class="hud-bottom"><button id="pause">Ⅱ PAUSA <kbd>ESC</kbd></button><button id="hotfix"><kbd>SPACE</kbd><span id="hotfix-label">HOTFIX READY</span><i id="hotfix-fill"></i></button><span>FIXES AUTOMÁTICOS <i class="status-dot"></i></span></div></section>
-        <section id="pause-panel" class="pause-panel overlay" hidden><span class="release-tag">NO TOQUES PRODUCCIÓN</span><h2>GO LIVE EN PAUSA</h2><p>Respirá. Los incidentes pueden esperar.</p><button id="resume" class="primary">CONTINUAR →</button><button id="cancel-run" class="cancel-run">CANCELAR PARTIDA Y VOLVER AL INICIO</button><p class="cancel-note">Si cancelás, esta partida no guarda puntaje.</p></section>
-        <section id="result" class="result overlay" hidden aria-labelledby="result-title"><div class="result-card"><span id="result-tag" class="release-tag"></span><h2 id="result-title"></h2><p id="result-message"></p><div class="result-score"><span>SCORE FINAL</span><strong id="final-score"></strong></div><p id="survival-bonus" class="survival-bonus" hidden>SURVIVAL BONUS +1000</p><div class="result-stats"><div><span>TIEMPO</span><strong id="final-time"></strong></div><div><span>RESUELTOS</span><strong id="final-issues"></strong></div><div><span>MAX COMBO</span><strong id="final-combo"></strong></div><div><span>PRODUCTION ISSUE</span><strong id="final-boss"></strong></div></div><p id="save-status" role="status"></p><button id="again" class="primary">PLAY AGAIN <span>↻</span></button><div class="menu-links"><button data-leaderboard>♜ LEADERBOARD</button><span>·</span><button id="back-menu">VOLVER AL INICIO</button></div></div></section>
+        <section id="hud" class="hud" hidden aria-label="${t('Estado de la partida')}"><div class="hud-top"><div class="stability-box"><div class="hud-label">${t('SYSTEM STABILITY')} <strong id="stability-value">100%</strong></div><div class="stability-track"><div id="stability-fill"></div></div><span id="phase-label">${t('● PHASE GREEN')}</span></div><div class="timer-box"><span class="hud-label">GO LIVE</span><strong id="timer">00:00 <small>/ 01:30</small></strong></div><div class="score-box"><span class="hud-label">${t('SCORE')}</span><strong id="score">0</strong><span id="combo">COMBO x1</span></div></div><div id="boss-bar" hidden><span>${t('⚠ PRODUCTION ISSUE')}</span><div><i id="boss-fill"></i></div></div><div class="hud-bottom"><button id="pause">${t('Ⅱ PAUSA')} <kbd>ESC</kbd></button><button id="hotfix"><kbd>${t('SPACE')}</kbd><span id="hotfix-label">${t('HOTFIX READY')}</span><i id="hotfix-fill"></i></button><span>${t('FIXES AUTOMÁTICOS')} <i class="status-dot"></i></span></div></section>
+        <section id="pause-panel" class="pause-panel overlay" hidden><span class="release-tag">${t('NO TOQUES PRODUCCIÓN')}</span><h2>${t('GO LIVE EN PAUSA')}</h2><p>${t('Respirá. Los incidentes pueden esperar.')}</p><button id="resume" class="primary">${t('CONTINUAR →')}</button><button id="cancel-run" class="cancel-run">${t('CANCELAR PARTIDA Y VOLVER AL INICIO')}</button><p class="cancel-note">${t('Si cancelás, esta partida no guarda puntaje.')}</p></section>
+        <section id="result" class="result overlay" hidden aria-labelledby="result-title"><div class="result-card"><span id="result-tag" class="release-tag"></span><h2 id="result-title"></h2><p id="result-message"></p><div class="result-score"><span>${t('SCORE FINAL')}</span><strong id="final-score"></strong></div><p id="survival-bonus" class="survival-bonus" hidden>${t('SURVIVAL BONUS +1000')}</p><div class="result-stats"><div><span>${t('TIEMPO')}</span><strong id="final-time"></strong></div><div><span>${t('RESUELTOS')}</span><strong id="final-issues"></strong></div><div><span>${t('MAX COMBO')}</span><strong id="final-combo"></strong></div><div><span>${t('PRODUCTION ISSUE')}</span><strong id="final-boss"></strong></div></div><p id="save-status" role="status"></p><button id="again" class="primary">${t('PLAY AGAIN')} <span>↻</span></button><div class="menu-links"><button data-leaderboard>${t('♜ LEADERBOARD')}</button><span>·</span><button id="back-menu">${t('VOLVER AL INICIO')}</button></div></div></section>
       </div>
-      <div class="arena-status"><span><i class="status-dot"></i> <span id="system-status">LISTO PARA EL DEPLOY</span></span><span>NO MEETINGS. JUST SURVIVAL.</span><span id="version"></span></div>
+      <div class="arena-status"><span><i class="status-dot"></i> <span id="system-status">${t('LISTO PARA EL DEPLOY')}</span></span><span>${t('NO MEETINGS. JUST SURVIVAL.')}</span><span id="version"></span></div>
     </section>
     <div id="connection-notice" role="status"></div>
-    <section class="feature-row" aria-label="Cómo sobrevivir"><article><span class="feature-number">01</span><div><h3>MOVETE. ESQUIVÁ. SOBREVIVÍ.</h3><p>Los problemas te siguen. No les des el gusto.</p></div><span class="feature-icon">⌘</span></article><article><span class="feature-number">02</span><div><h3>EL FIX SALE SOLO.</h3><p>Vos esquivá. Nosotros apuntamos a los bugs.</p></div><span class="feature-icon">⌁</span></article><article><span class="feature-number">03</span><div><h3>¿TODO ARDE? HOTFIX.</h3><p>Una barra espaciadora. Una segunda oportunidad.</p></div><span class="feature-icon">ϟ</span></article></section>
+    <section class="feature-row" aria-label="${t('Cómo sobrevivir')}"><article><span class="feature-number">01</span><div><h3>${t('MOVETE. ESQUIVÁ. SOBREVIVÍ.')}</h3><p>${t('Los problemas te siguen. No les des el gusto.')}</p></div><span class="feature-icon">⌘</span></article><article><span class="feature-number">02</span><div><h3>${t('EL FIX SALE SOLO.')}</h3><p>${t('Vos esquivá. Nosotros apuntamos a los bugs.')}</p></div><span class="feature-icon">⌁</span></article><article><span class="feature-number">03</span><div><h3>${t('¿TODO ARDE? HOTFIX.')}</h3><p>${t('Una barra espaciadora. Una segunda oportunidad.')}</p></div><span class="feature-icon">ϟ</span></article></section>
     <section id="enemies" class="enemy-guide" aria-labelledby="enemies-title" tabindex="-1"></section>
   </main>
-  <footer><span class="footer-credits">Creado por <strong>Ezequiel Baravalle</strong> con ayuda de <strong>Codex</strong>.</span><span>BUILT FOR THE PEOPLE WHO SHIP.</span><span>Hecho con café y permisos de producción. <span class="footer-cursor">▮</span></span><span id="access-notice" class="access-notice" hidden>En modo online registramos tu IP, navegador y fecha de acceso. Estos datos no aparecen en el leaderboard.</span></footer>
-  <dialog id="info-dialog"><div class="dialog-heading"><span class="eyebrow">GO LIVE SURVIVOR</span><button id="close-dialog" aria-label="Cerrar">✕</button></div><div id="dialog-content"></div></dialog>
+  <footer><span id="footer-version"></span><span class="footer-credits">${t('Creado por')} <strong>Ezequiel Baravalle</strong> ${t('con ayuda de')} <strong>Codex</strong>.</span><span>${t('BUILT FOR THE PEOPLE WHO SHIP.')}</span><span>${t('Hecho con café y permisos de producción.')} <span class="footer-cursor">▮</span></span><span id="access-notice" class="access-notice" hidden>${t('En modo online registramos tu IP, navegador y fecha de acceso. Estos datos no aparecen en el leaderboard.')}</span></footer>
+  <dialog id="info-dialog"><div class="dialog-heading"><span class="eyebrow">GO LIVE SURVIVOR</span><button id="close-dialog" aria-label="${t('Cerrar')}">✕</button></div><div id="dialog-content"></div></dialog>
 `;
 const el = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
 renderEnemyGuide(el('enemies'));
-const number = (n: number) => new Intl.NumberFormat('en-US').format(n);
+const number = (n: number) => new Intl.NumberFormat(locale).format(n);
 const audio = new AudioService();
+const touchPreference = storage.get('gls:touch');
+let touchMode = touchPreference
+  ? touchPreference === 'on'
+  : navigator.maxTouchPoints > 0 || matchMedia('(pointer: coarse)').matches;
+el('start-form').insertAdjacentHTML(
+  'beforebegin',
+  `<label class="touch-option"><input id="touch-mode" type="checkbox">${t('Touch controls')}</label><p id="touch-hint" class="touch-hint">${t('Drag the joystick to move. Tap PATCH to clear nearby enemies. Landscape gives you more room.')}</p>`,
+);
+el('hud').insertAdjacentHTML(
+  'beforeend',
+  `<div id="touch-controls" class="touch-controls" hidden><div id="touch-stick" class="touch-stick" role="group" aria-label="${t('Movement joystick')}"><span class="stick-arrows" aria-hidden="true">↕ ↔</span><span id="touch-thumb" class="touch-thumb"></span></div><button id="touch-hotfix" class="touch-hotfix" aria-label="${t('EMERGENCY HOTFIX')}"><span aria-hidden="true">ϟ</span><span id="touch-hotfix-label">${t('HOTFIX READY')}</span></button></div>`,
+);
+const touchToggle = el<HTMLInputElement>('touch-mode');
+function updateTouchOption(): void {
+  touchToggle.checked = touchMode;
+  el('touch-hint').hidden = !touchMode;
+  document.body.classList.toggle('touch-mode', touchMode);
+}
+touchToggle.onchange = () => {
+  touchMode = touchToggle.checked;
+  storage.set('gls:touch', touchMode ? 'on' : 'off');
+  updateTouchOption();
+};
+updateTouchOption();
+let gamePaused = false;
+document.addEventListener('pointerup', () => audio.unlock());
+document.addEventListener('keydown', () => audio.unlock());
+document.addEventListener('visibilitychange', () => audio.music.setHidden(document.hidden));
+audio.music.setHidden(document.hidden);
+app.insertAdjacentHTML(
+  'beforeend',
+  `
+  <dialog id="audio-dialog" aria-labelledby="audio-title">
+    <div class="dialog-heading"><h2 id="audio-title">${t('Audio options')}</h2><button id="close-audio" aria-label="${t('Cerrar')}">✕</button></div>
+    <div class="audio-options">
+      <label><input id="all-sound" type="checkbox">${t('Enable audio')}</label>
+      <label><input id="music-enabled" type="checkbox">${t('Background music')}</label>
+      <p>${t('Music starts after your first interaction. Your preferences are saved.')}</p>
+      <div class="music-credits">
+        <h3>${t('Music credits')}</h3>
+        <p>${t('Home')}: <a href="https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1300046" target="_blank" rel="noopener noreferrer">Dream Culture</a></p>
+        <p>${t('Gameplay')}: <a href="https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1500073" target="_blank" rel="noopener noreferrer">Bit Quest</a></p>
+        <p>Kevin MacLeod (<a href="https://incompetech.com/" target="_blank" rel="noopener noreferrer">incompetech.com</a>) · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a></p>
+        <p>${t('Original recordings, played at reduced volume.')}</p>
+      </div>
+    </div>
+  </dialog>
+`,
+);
 let repository: ScoreRepository = new LocalScoreRepository();
 let runNumber = 0;
 let currentName = '';
 let screen: 'menu' | 'playing' | 'result' = 'menu';
 let boardRequest = 0;
+let lastHud: HudState | undefined;
+let finalScore: number | undefined;
+let boardWeekly = true;
+let renderSaveStatus = () => '';
 const dialog = el<HTMLDialogElement>('info-dialog');
 const nickname = el<HTMLInputElement>('nickname');
 nickname.value = storage.get('gls:nickname') ?? '';
 document.querySelector('.team-label')!.textContent = GAME_CONFIG.teamName;
 document.querySelector('.subtitle')!.textContent = GAME_CONFIG.subtitle;
 document.title = GAME_CONFIG.title;
-el('version').textContent = `BUILD ${GAME_CONFIG.version} / STABLE-ISH`;
+el('version').textContent = 'v' + GAME_CONFIG.version;
+el('footer-version').textContent = t('Version') + ' ' + GAME_CONFIG.version;
+const languageSelect = el<HTMLSelectElement>('language');
+languageSelect.value = language;
+languageSelect.onchange = () => {
+  changeLanguage(languageSelect.value);
+};
+
+function changeLanguage(value: string): void {
+  const previous = language;
+  setLanguage(value);
+  document.documentElement.lang = language;
+  translateInterface(app, previous);
+  scene.refreshLanguage(previous);
+  renderEnemyGuide(el('enemies'));
+  document.querySelectorAll<HTMLSelectElement>('[data-language], #language').forEach((select) => { select.value = language; });
+  el('footer-version').textContent = `${t('Version')} ${GAME_CONFIG.version}`;
+  if (lastHud && screen === 'playing') updateHud(lastHud);
+  if (finalScore !== undefined) el('final-score').textContent = number(finalScore);
+  el('save-status').textContent = renderSaveStatus();
+  if (dialog.open && el('dialog-content').querySelector('#weekly')) void showLeaderboard(boardWeekly);
+}
 
 const { game, scene } = createGame(el('game'), { audio, hud: updateHud, finish: showResult });
+const touchControls = new TouchControls(el('touch-stick'), el('touch-thumb'), (x, y) =>
+  scene.setTouchMovement(x, y),
+);
+el('resume').insertAdjacentHTML(
+  'afterend',
+  `<button id="pause-audio" class="cancel-run">${t('Audio options')}</button>`,
+);
+el('pause-audio').onclick = () => el('sound').click();
+// Each modal needs its own selector because the page behind it is inert.
+for (const target of [el('pause-panel'), el('audio-dialog').querySelector('.audio-options')!, el('info-dialog').querySelector('.dialog-heading')!]) {
+  const label = document.createElement('label');
+  label.className = 'language-control screen-language';
+  label.innerHTML = `<span>${t('Language')}</span><select data-language aria-label="${t('Language')}"><option value="es" lang="es">Español</option><option value="en" lang="en">English</option></select>`;
+  target.append(label);
+  const select = label.querySelector('select')!;
+  select.value = language;
+  select.onchange = () => changeLanguage(select.value);
+  select.addEventListener('keydown', (event) => event.stopPropagation());
+}
+el('touch-hotfix').onpointerdown = (event) => {
+  event.preventDefault();
+  audio.unlock();
+  scene.hotfix();
+};
+el('touch-hotfix').onclick = (event) => {
+  if (event.detail === 0) scene.hotfix();
+};
+let viewportWidth = window.innerWidth;
+window.addEventListener('resize', () => {
+  const widthChanged = window.innerWidth !== viewportWidth;
+  viewportWidth = window.innerWidth;
+  // Keyboard and browser-toolbar height changes should not interrupt a new run.
+  if (widthChanged && touchMode && screen === 'playing' && !gamePaused) scene.togglePause();
+});
+function setTouchPlaying(playing: boolean): void {
+  document.body.classList.toggle('touch-playing', playing && touchMode);
+  touchControls.setEnabled(playing && touchMode);
+  el('touch-controls').hidden = !playing || !touchMode;
+  requestAnimationFrame(() => game.scale.refresh());
+  scene.setMobileView(playing && touchMode);
+}
 // Phaser's ready event precedes scene creation; POST_STEP is the first safe start point.
 game.events.once('poststep', () => {
   el<HTMLButtonElement>('start').disabled = false;
 });
 
 function updateSound(): void {
-  el('sound').textContent = audio.enabled ? '♫ ON' : '♫ OFF';
-  el('sound').setAttribute('aria-label', audio.enabled ? 'Desactivar sonido' : 'Activar sonido');
-  el('sound').setAttribute('aria-pressed', String(audio.enabled));
+  el('sound').textContent = `♫ ${t('Audio options')}`;
+  el('sound').setAttribute('aria-label', t('Audio options'));
+  el('sound').setAttribute('aria-haspopup', 'dialog');
+  el<HTMLInputElement>('all-sound').checked = audio.enabled;
+  el<HTMLInputElement>('music-enabled').checked = audio.music.enabled;
 }
 updateSound();
 el('sound').onclick = () => {
+  if (screen === 'playing' && !gamePaused) scene.togglePause();
+  el<HTMLDialogElement>('audio-dialog').showModal();
+};
+el('close-audio').onclick = () => el<HTMLDialogElement>('audio-dialog').close();
+el('audio-dialog').addEventListener('click', (event) => {
+  if (event.target === el('audio-dialog')) el<HTMLDialogElement>('audio-dialog').close();
+});
+el('audio-dialog').addEventListener('keydown', (event) => event.stopPropagation());
+el('all-sound').onchange = () => {
   audio.toggle();
+  updateSound();
+};
+el('music-enabled').onchange = () => {
+  audio.music.setEnabled(el<HTMLInputElement>('music-enabled').checked);
+  audio.unlock();
   updateSound();
 };
 
 void createScoreRepository().then((result) => {
   repository = result.repository;
-  el('mode').textContent = repository.mode === 'online' ? 'ONLINE MODE' : 'LOCAL MODE';
+  el('mode').textContent = repository.mode === 'online' ? t('ONLINE MODE') : t('LOCAL MODE');
   el('connection-notice').textContent = result.notice;
   el('access-notice').hidden = repository.mode !== 'online';
 });
@@ -104,11 +239,13 @@ function start(): void {
   nickname.value = currentName;
   runNumber++;
   screen = 'playing';
+  setTouchPlaying(true);
+  audio.music.setScene('game');
   el('menu').hidden = true;
   el('result').hidden = true;
   el('hud').hidden = false;
   el('pause-panel').hidden = true;
-  el('system-status').textContent = 'DEPLOY EN CURSO';
+  el('system-status').textContent = t('DEPLOY EN CURSO');
   document.querySelectorAll<HTMLButtonElement>('header [data-leaderboard]').forEach((button) => {
     button.disabled = true;
   });
@@ -124,11 +261,13 @@ el('again').onclick = start;
 function showMenu(): void {
   runNumber++;
   screen = 'menu';
+  setTouchPlaying(false);
+  audio.music.setScene('home');
   el('result').hidden = true;
   el('hud').hidden = true;
   el('pause-panel').hidden = true;
   el('menu').hidden = false;
-  el('system-status').textContent = 'LISTO PARA EL DEPLOY';
+  el('system-status').textContent = t('LISTO PARA EL DEPLOY');
   document.querySelectorAll<HTMLButtonElement>('header [data-leaderboard]').forEach((button) => {
     button.disabled = false;
   });
@@ -150,6 +289,14 @@ el('hotfix').onclick = () => {
 };
 
 function updateHud(state: HudState): void {
+  lastHud = state;
+  gamePaused = state.paused;
+  touchControls.setEnabled(touchMode && screen === 'playing' && !state.paused);
+  el('touch-controls').hidden = !touchMode || state.paused;
+  el<HTMLButtonElement>('touch-hotfix').disabled = state.paused || state.cooldown > 0;
+  el('touch-hotfix-label').textContent =
+    state.cooldown > 0 ? `${Math.ceil(state.cooldown)}s` : t('HOTFIX');
+  audio.music.setPaused(state.paused);
   el('stability-value').textContent = `${state.stability}%`;
   el('stability-fill').style.width = `${state.stability}%`;
   el('stability-fill').style.backgroundColor =
@@ -160,10 +307,12 @@ function updateHud(state: HudState): void {
   el('score').textContent = number(state.score);
   el('combo').textContent = `COMBO x${state.combo}`;
   el('combo').style.color = state.combo > 1 ? '#beff63' : '#7d8ba2';
-  el('phase-label').textContent = `● PHASE ${PHASES[state.phase].name}`;
+  el('phase-label').textContent = `${t('PHASE')} ${PHASES[state.phase].name}`;
   el('phase-label').style.color = PHASES[state.phase].color;
   el('hotfix-label').textContent =
-    state.cooldown > 0 ? `HOTFIX ${state.cooldown.toFixed(1)}s` : 'HOTFIX READY';
+    state.cooldown > 0
+      ? `${t('HOTFIX')} ${state.cooldown.toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}s`
+      : t('HOTFIX READY');
   el('hotfix').classList.toggle('charging', state.cooldown > 0);
   el('hotfix-fill').style.width = `${(1 - state.cooldown / 8) * 100}%`;
   el('boss-bar').hidden = state.bossHp === null;
@@ -172,7 +321,10 @@ function updateHud(state: HudState): void {
 }
 
 function showResult(result: Omit<ScoreSubmission, 'player_name'>): void {
+  finalScore = result.score;
   screen = 'result';
+  setTouchPlaying(false);
+  audio.music.setScene('home');
   el('hud').hidden = true;
   el('result').hidden = false;
   document.querySelectorAll<HTMLButtonElement>('header [data-leaderboard]').forEach((button) => {
@@ -180,21 +332,22 @@ function showResult(result: Omit<ScoreSubmission, 'player_name'>): void {
   });
   const survived = result.result === 'survived';
   el('result').classList.toggle('won', survived);
-  el('result-tag').textContent = survived ? 'DEPLOYMENT COMPLETE' : 'INCIDENT REPORT';
-  el('result-title').textContent = survived ? 'GO LIVE SURVIVED' : 'PRODUCTION DOWN';
+  el('result-tag').textContent = survived ? t('DEPLOYMENT COMPLETE') : t('INCIDENT REPORT');
+  el('result-title').textContent = survived ? t('GO LIVE SURVIVED') : t('PRODUCTION DOWN');
   el('result-message').textContent = survived
-    ? 'Increíblemente, producción sigue funcionando.'
-    : DEFEAT_MESSAGES[Math.floor(Math.random() * DEFEAT_MESSAGES.length)];
+    ? t('Increíblemente, producción sigue funcionando.')
+    : defeatMessages()[Math.floor(Math.random() * defeatMessages().length)];
   el('final-score').textContent = number(result.score);
   el('final-time').textContent = `${result.survived_seconds}s`;
   el('final-issues').textContent = String(result.issues_resolved);
   el('final-combo').textContent = `x${result.max_combo}`;
-  el('final-boss').textContent = result.boss_resolved ? 'RESOLVED ✓' : 'NOT RESOLVED';
+  el('final-boss').textContent = result.boss_resolved ? t('RESOLVED ✓') : t('NOT RESOLVED');
   el('survival-bonus').hidden = !survived;
   el('system-status').textContent = survived
-    ? 'PRODUCCIÓN SIGUE FUNCIONANDO. POR AHORA.'
-    : 'REVISANDO LOS LOGS...';
-  el('save-status').textContent = 'Guardando partida…';
+    ? t('PRODUCCIÓN SIGUE FUNCIONANDO. POR AHORA.')
+    : t('REVISANDO LOS LOGS...');
+  renderSaveStatus = () => t('Guardando partida…');
+  el('save-status').textContent = renderSaveStatus();
   el('again').focus();
   const submission = { ...result, player_name: currentName };
   const thisRun = runNumber;
@@ -205,17 +358,20 @@ function showResult(result: Omit<ScoreSubmission, 'player_name'>): void {
       await activeRepository.submitScore(submission);
       saved = true;
       const rank = await activeRepository.getWeeklyRank();
-      if (runNumber === thisRun)
-        el('save-status').textContent =
-          `${activeRepository.mode === 'online' ? 'WEEKLY RANK' : 'LOCAL RANK'} ${rank ? `#${rank}` : '—'} · PARTIDA GUARDADA`;
+      if (runNumber === thisRun) {
+        renderSaveStatus = () => `${activeRepository.mode === 'online' ? t('WEEKLY RANK') : t('LOCAL RANK')} ${rank ? `#${rank}` : '—'} · ${t('PARTIDA GUARDADA')}`;
+        el('save-status').textContent = renderSaveStatus();
+      }
     } catch {
       if (!saved && activeRepository.mode === 'online') {
         await new LocalScoreRepository().submitScore(submission);
       }
-      if (runNumber === thisRun)
-        el('save-status').textContent = saved
-          ? 'Partida guardada. Ranking temporalmente no disponible.'
-          : 'Sin conexión. Partida guardada en el ranking local.';
+      if (runNumber === thisRun) {
+        renderSaveStatus = () => saved
+          ? t('Partida guardada. Ranking temporalmente no disponible.')
+          : t('Sin conexión. Partida guardada en el ranking local.');
+        el('save-status').textContent = renderSaveStatus();
+      }
     }
   })();
 }
@@ -229,7 +385,11 @@ dialog.addEventListener('close', () => {
 });
 el('how-to').onclick = () => {
   el('dialog-content').innerHTML =
-    `<span class="release-tag">RUNBOOK / 90 SEGUNDOS</span><h2>CÓMO SOBREVIVIR</h2><div class="instructions"><p><b>01 / Movete</b>Usá WASD o las flechas para esquivar. Si te alcanzan, baja tu System Stability.</p><p><b>02 / Los Fixes son automáticos</b>Disparás al problema más cercano. Resolvé varios en menos de 2 segundos para encadenar combos hasta x3.</p><p><b>03 / Emergency Hotfix</b>SPACE lanza un pulso que limpia problemas cercanos. Se recarga cada 8 segundos.</p><p><b>04 / Aguantá hasta el final</b>La presión sube a los 30 y 60 segundos. Al segundo 65 llega Production Issue. Sobrevivir 90 segundos da +1000 puntos; resolver el boss es opcional.</p><p><b>Un respiro</b>ESC pausa. Al cambiar de ventana, pausamos automáticamente.</p></div><p class="dialog-note">Sin cuentas, sin reuniones, sin “un cambio chiquito”.</p>`;
+    `<span class="release-tag">${t('RUNBOOK / 90 SEGUNDOS')}</span><h2>${t('CÓMO SOBREVIVIR')}</h2><div class="instructions"><p><b>${t('01 / Movete')}</b>${t('Usá WASD o las flechas para esquivar. Si te alcanzan, baja tu System Stability.')}</p><p><b>${t('02 / Los Fixes son automáticos')}</b>${t('Disparás al problema más cercano. Resolvé varios en menos de 2 segundos para encadenar combos hasta x3.')}</p><p><b>${t('03 / Emergency Hotfix')}</b>${t('SPACE lanza un pulso que limpia problemas cercanos. Se recarga cada 8 segundos.')}</p><p><b>${t('04 / Aguantá hasta el final')}</b>${t('La presión sube a los 30 y 60 segundos. Al segundo 65 llega Production Issue. Sobrevivir 90 segundos da +1000 puntos; resolver el boss es opcional.')}</p><p><b>${t('Un respiro')}</b>${t('ESC pausa. Al cambiar de ventana, pausamos automáticamente.')}</p></div><p class="dialog-note">${t('Sin cuentas, sin reuniones, sin “un cambio chiquito”.')}</p>`;
+  el('dialog-content').insertAdjacentHTML(
+    'afterbegin',
+    `<p class="touch-hint">${t('Drag the joystick to move. Tap PATCH to clear nearby enemies. Landscape gives you more room.')}</p>`,
+  );
   dialog.showModal();
   el('dialog-content').scrollTop = 0;
 };
@@ -243,9 +403,10 @@ document.querySelectorAll<HTMLButtonElement>('[data-leaderboard]').forEach((butt
 });
 
 async function showLeaderboard(weekly: boolean): Promise<void> {
+  boardWeekly = weekly;
   const request = ++boardRequest;
   el('dialog-content').innerHTML =
-    `<span class="release-tag">HALL OF PRODUCTION</span><h2>♜ GO LIVE HEROES</h2><p class="leaderboard-subtitle">Una partida más. Un puesto más arriba.</p><div class="board-tabs"><button id="weekly" class="${weekly ? 'selected' : ''}" aria-pressed="${weekly}">THIS WEEK</button><button id="alltime" class="${!weekly ? 'selected' : ''}" aria-pressed="${!weekly}">ALL TIME</button></div><p id="board-notice" role="status">Consultando los logs…</p><table class="leaderboard"><thead><tr><th>#</th><th>CONSULTOR</th><th>SCORE</th></tr></thead><tbody id="board-rows"></tbody></table><div class="board-footer"><span id="personal-best">YOUR BEST: —</span><span>${weekly ? 'LUNES 00:00 UTC' : 'TODOS LOS DEPLOYS'}</span></div><p class="dialog-note">Top 10 · Mejor partida por jugador · Nicknames no únicos.</p>`;
+    `<span class="release-tag">${t('HALL OF PRODUCTION')}</span><h2>${t('♜ GO LIVE HEROES')}</h2><p class="leaderboard-subtitle">${t('Una partida más. Un puesto más arriba.')}</p><div class="board-tabs"><button id="weekly" class="${weekly ? 'selected' : ''}" aria-pressed="${weekly}">${t('THIS WEEK')}</button><button id="alltime" class="${!weekly ? 'selected' : ''}" aria-pressed="${!weekly}">${t('ALL TIME')}</button></div><p id="board-notice" role="status">${t('Consultando los logs…')}</p><table class="leaderboard"><thead><tr><th>#</th><th>${t('CONSULTOR')}</th><th>${t('SCORE')}</th></tr></thead><tbody id="board-rows"></tbody></table><div class="board-footer"><span id="personal-best">${t('YOUR BEST: —')}</span><span>${weekly ? t('LUNES 00:00 UTC') : t('TODOS LOS DEPLOYS')}</span></div><p class="dialog-note">${t('Top 10 · Mejor partida por jugador · Nicknames no únicos.')}</p>`;
   el('weekly').onclick = () => {
     void showLeaderboard(true);
   };
@@ -271,26 +432,27 @@ async function showLeaderboard(weekly: boolean): Promise<void> {
   if (request !== boardRequest || !dialog.open) return;
   const [rows, best] = data;
   el('board-notice').textContent = fallback
-    ? 'Sin conexión. Mostrando tus partidas locales.'
+    ? t('Sin conexión. Mostrando tus partidas locales.')
     : source.mode === 'local'
-      ? 'LOCAL MODE · Solo partidas de este navegador.'
-      : 'ONLINE · El equipo está en producción.';
+      ? t('LOCAL MODE · Solo partidas de este navegador.')
+      : t('ONLINE · El equipo está en producción.');
   if (!rows.length) {
     const tr = document.createElement('tr');
     const td = document.createElement('td');
     td.colSpan = 3;
     td.className = 'empty-board';
-    td.textContent = 'Todavía no hay héroes. Tu próximo deploy puede ser el primero.';
+    td.textContent = t('Todavía no hay héroes. Tu próximo deploy puede ser el primero.');
     tr.append(td);
     el('board-rows').append(tr);
   }
   rows.forEach((row, index) => {
     const tr = document.createElement('tr');
+    tr.dataset.userContent = '';
     tr.classList.toggle('is-you', row.user_id === source.userId);
     const podium = [
-      { style: 'gold', medal: '🥇', label: '1.º puesto · Oro' },
-      { style: 'silver', medal: '🥈', label: '2.º puesto · Plata' },
-      { style: 'bronze', medal: '🥉', label: '3.º puesto · Bronce' },
+      { style: 'gold', medal: '🥇', label: t('1.º puesto · Oro') },
+      { style: 'silver', medal: '🥈', label: t('2.º puesto · Plata') },
+      { style: 'bronze', medal: '🥉', label: t('3.º puesto · Bronce') },
     ][index];
     const position = document.createElement('td');
     if (podium) {
@@ -307,7 +469,7 @@ async function showLeaderboard(weekly: boolean): Promise<void> {
     }
     tr.append(position);
     [
-      `${row.player_name}${row.user_id === source.userId ? '  ← YOU' : ''}`,
+      `${row.player_name}${row.user_id === source.userId ? t('  ← YOU') : ''}`,
       number(row.score),
     ].forEach((value) => {
       const td = document.createElement('td');
@@ -316,5 +478,5 @@ async function showLeaderboard(weekly: boolean): Promise<void> {
     });
     el('board-rows').append(tr);
   });
-  el('personal-best').textContent = `YOUR BEST: ${best === null ? '—' : number(best)}`;
+  el('personal-best').textContent = `${t('YOUR BEST')}: ${best === null ? '—' : number(best)}`;
 }

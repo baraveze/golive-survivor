@@ -1,5 +1,6 @@
 import { storage } from '../../utils/storage';
 import { isThisWeek } from '../../utils/dates';
+import { createUuid } from '../../utils/uuid';
 import {
   bestPerPlayer,
   validateSubmission,
@@ -11,7 +12,7 @@ export class LocalScoreRepository implements ScoreRepository {
   readonly mode = 'local' as const;
   readonly userId: string;
   constructor() {
-    this.userId = storage.get('gls:player-id') || crypto.randomUUID();
+    this.userId = storage.get('gls:player-id') || createUuid();
     storage.set('gls:player-id', this.userId);
   }
   private read(): LeaderboardEntry[] {
@@ -39,7 +40,7 @@ export class LocalScoreRepository implements ScoreRepository {
     const entries = this.read();
     entries.push({
       ...score,
-      id: crypto.randomUUID(),
+      id: createUuid(),
       user_id: this.userId,
       created_at: new Date().toISOString(),
     });

@@ -1,3 +1,4 @@
+import { t } from '../../i18n';
 export interface EnemyDefinition {
   id: string;
   label: string;
@@ -15,9 +16,9 @@ export interface EnemyDefinition {
 export const ENEMIES: EnemyDefinition[] = [
   {
     id: 'bug',
-    description: 'Pequeño, rápido y convencido de que en DEV funcionaba.',
-    tip: 'Mantené distancia: un solo Fix alcanza para resolverlo.',
-    label: 'BUG',
+    get description() { return t('Pequeño, rápido y convencido de que en DEV funcionaba.'); },
+    get tip() { return t('Mantené distancia: un solo Fix alcanza para resolverlo.'); },
+    get label() { return t('BUG'); },
     glyph: '!',
     hp: 1,
     speed: 100,
@@ -29,9 +30,9 @@ export const ENEMIES: EnemyDefinition[] = [
   },
   {
     id: 'flow',
-    description: 'La automatización que eligió fallar justo cuando entró el cliente.',
-    tip: 'Necesita dos Fixes. Seguí moviéndote mientras se resuelve.',
-    label: 'FLOW FAILED',
+    get description() { return t('La automatización que eligió fallar justo cuando entró el cliente.'); },
+    get tip() { return t('Necesita dos Fixes. Seguí moviéndote mientras se resuelve.'); },
+    get label() { return t('FLOW FAILED'); },
     glyph: 'ϟ',
     hp: 2,
     speed: 76,
@@ -43,9 +44,9 @@ export const ENEMIES: EnemyDefinition[] = [
   },
   {
     id: 'role',
-    description: 'El permiso que nadie pidió. El bloqueo que todos sufren.',
-    tip: 'Es el más rápido del grupo. No lo dejes acercarse.',
-    label: 'MISSING ROLE',
+    get description() { return t('El permiso que nadie pidió. El bloqueo que todos sufren.'); },
+    get tip() { return t('Es el más rápido del grupo. No lo dejes acercarse.'); },
+    get label() { return t('MISSING ROLE'); },
     glyph: '⊘',
     hp: 1,
     speed: 125,
@@ -57,9 +58,9 @@ export const ENEMIES: EnemyDefinition[] = [
   },
   {
     id: 'scope',
-    description: '“Ya que estamos, ¿podemos agregar una cosita más?”',
-    tip: 'Es lento, pero pega fuerte. Rodealo y cuidá tu espacio.',
-    label: 'SCOPE CREEP',
+    get description() { return t('“Ya que estamos, ¿podemos agregar una cosita más?”'); },
+    get tip() { return t('Es lento, pero pega fuerte. Rodealo y cuidá tu espacio.'); },
+    get label() { return t('SCOPE CREEP'); },
     glyph: '+',
     hp: 3,
     speed: 56,
@@ -71,9 +72,9 @@ export const ENEMIES: EnemyDefinition[] = [
   },
   {
     id: 'excel',
-    description: '70.000 filas, columnas nuevas y un archivo llamado final_final_v8.xlsx.',
-    tip: 'Resiste varios Fixes. Si viene acompañado, prepará el Hotfix.',
-    label: 'EXCEL 70K ROWS',
+    get description() { return t('70.000 filas, columnas nuevas y un archivo llamado final_final_v8.xlsx.'); },
+    get tip() { return t('Resiste varios Fixes. Si viene acompañado, prepará el Hotfix.'); },
+    get label() { return t('EXCEL 70K ROWS'); },
     glyph: 'X',
     hp: 4,
     speed: 49,
@@ -85,9 +86,9 @@ export const ENEMIES: EnemyDefinition[] = [
   },
   {
     id: 'integration',
-    description: 'SAP, LEGACY, ERP o API. Siempre hay otro sistema en el medio.',
-    tip: 'Tiene mucha resistencia. Evitá quedar encerrado entre integraciones.',
-    label: 'INTEGRATION',
+    get description() { return t('SAP, LEGACY, ERP o API. Siempre hay otro sistema en el medio.'); },
+    get tip() { return t('Tiene mucha resistencia. Evitá quedar encerrado entre integraciones.'); },
+    get label() { return t('INTEGRATION'); },
     glyph: '↔',
     hp: 6,
     speed: 44,
@@ -100,9 +101,9 @@ export const ENEMIES: EnemyDefinition[] = [
 ];
 export const BOSS: EnemyDefinition = {
   id: 'boss',
-  description: 'El incidente que convierte el Go Live en una llamada con todo el equipo.',
-  tip: 'Combiná Fixes y Hotfix. Resolverlo suma un gran premio, pero podés ganar sobreviviendo.',
-  label: 'PRODUCTION ISSUE',
+  get description() { return t('El incidente que convierte el Go Live en una llamada con todo el equipo.'); },
+  get tip() { return t('Combiná Fixes y Hotfix. Resolverlo suma un gran premio, pero podés ganar sobreviviendo.'); },
+  get label() { return t('PRODUCTION ISSUE'); },
   glyph: '!!',
   hp: 25,
   speed: 45,
