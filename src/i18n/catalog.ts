@@ -1,5 +1,19 @@
 // Source phrases are stable lookup keys. Both languages ship with every build.
 export const catalog: Record<string, readonly [string, string]> = {
+  'Audio options': ['Opciones de audio', 'Audio options'],
+  'Enable audio': ['Activar audio (música y efectos)', 'Enable audio (music and effects)'],
+  'Background music': ['Música de fondo', 'Background music'],
+  'Music starts after your first interaction. Your preferences are saved.': [
+    'La música comienza con tu primera interacción. Tus preferencias quedan guardadas.',
+    'Music starts after your first interaction. Your preferences are saved.',
+  ],
+  'Music credits': ['Créditos de música', 'Music credits'],
+  Home: ['Inicio', 'Home'],
+  Gameplay: ['Partida', 'Gameplay'],
+  'Original recordings, played at reduced volume.': [
+    'Grabaciones originales, reproducidas a volumen reducido.',
+    'Original recordings, played at reduced volume.',
+  ],
   Principal: ['Principal', 'Main navigation'],
   'Go Live Survivor, inicio': ['Go Live Survivor, inicio', 'Go Live Survivor, home'],
   Leaderboard: ['Clasificación', 'Leaderboard'],

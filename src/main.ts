@@ -56,6 +56,31 @@ const el = <T extends HTMLElement = HTMLElement>(id: string) => document.getElem
 renderEnemyGuide(el('enemies'));
 const number = (n: number) => new Intl.NumberFormat(locale).format(n);
 const audio = new AudioService();
+let gamePaused = false;
+document.addEventListener('pointerup', () => audio.unlock());
+document.addEventListener('keydown', () => audio.unlock());
+document.addEventListener('visibilitychange', () => audio.music.setHidden(document.hidden));
+audio.music.setHidden(document.hidden);
+app.insertAdjacentHTML(
+  'beforeend',
+  `
+  <dialog id="audio-dialog" aria-labelledby="audio-title">
+    <div class="dialog-heading"><h2 id="audio-title">${t('Audio options')}</h2><button id="close-audio" aria-label="${t('Cerrar')}">✕</button></div>
+    <div class="audio-options">
+      <label><input id="all-sound" type="checkbox">${t('Enable audio')}</label>
+      <label><input id="music-enabled" type="checkbox">${t('Background music')}</label>
+      <p>${t('Music starts after your first interaction. Your preferences are saved.')}</p>
+      <div class="music-credits">
+        <h3>${t('Music credits')}</h3>
+        <p>${t('Home')}: <a href="https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1300046" target="_blank" rel="noopener noreferrer">Dream Culture</a></p>
+        <p>${t('Gameplay')}: <a href="https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1500073" target="_blank" rel="noopener noreferrer">Bit Quest</a></p>
+        <p>Kevin MacLeod (<a href="https://incompetech.com/" target="_blank" rel="noopener noreferrer">incompetech.com</a>) · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a></p>
+        <p>${t('Original recordings, played at reduced volume.')}</p>
+      </div>
+    </div>
+  </dialog>
+`,
+);
 let repository: ScoreRepository = new LocalScoreRepository();
 let runNumber = 0;
 let currentName = '';
@@ -84,16 +109,29 @@ game.events.once('poststep', () => {
 });
 
 function updateSound(): void {
-  el('sound').textContent = audio.enabled ? t('♫ ON') : t('♫ OFF');
-  el('sound').setAttribute(
-    'aria-label',
-    audio.enabled ? t('Desactivar sonido') : t('Activar sonido'),
-  );
-  el('sound').setAttribute('aria-pressed', String(audio.enabled));
+  el('sound').textContent = `♫ ${t('Audio options')}`;
+  el('sound').setAttribute('aria-label', t('Audio options'));
+  el('sound').setAttribute('aria-haspopup', 'dialog');
+  el<HTMLInputElement>('all-sound').checked = audio.enabled;
+  el<HTMLInputElement>('music-enabled').checked = audio.music.enabled;
 }
 updateSound();
 el('sound').onclick = () => {
+  if (screen === 'playing' && !gamePaused) scene.togglePause();
+  el<HTMLDialogElement>('audio-dialog').showModal();
+};
+el('close-audio').onclick = () => el<HTMLDialogElement>('audio-dialog').close();
+el('audio-dialog').addEventListener('click', (event) => {
+  if (event.target === el('audio-dialog')) el<HTMLDialogElement>('audio-dialog').close();
+});
+el('audio-dialog').addEventListener('keydown', (event) => event.stopPropagation());
+el('all-sound').onchange = () => {
   audio.toggle();
+  updateSound();
+};
+el('music-enabled').onchange = () => {
+  audio.music.setEnabled(el<HTMLInputElement>('music-enabled').checked);
+  audio.unlock();
   updateSound();
 };
 
@@ -117,6 +155,7 @@ function start(): void {
   nickname.value = currentName;
   runNumber++;
   screen = 'playing';
+  audio.music.setScene('game');
   languageSelect.disabled = true;
   languageSelect.title = t('Language can be changed from the home screen.');
   el('menu').hidden = true;
@@ -139,6 +178,7 @@ el('again').onclick = start;
 function showMenu(): void {
   runNumber++;
   screen = 'menu';
+  audio.music.setScene('home');
   languageSelect.disabled = false;
   languageSelect.title = '';
   el('result').hidden = true;
@@ -167,6 +207,8 @@ el('hotfix').onclick = () => {
 };
 
 function updateHud(state: HudState): void {
+  gamePaused = state.paused;
+  audio.music.setPaused(state.paused);
   el('stability-value').textContent = `${state.stability}%`;
   el('stability-fill').style.width = `${state.stability}%`;
   el('stability-fill').style.backgroundColor =
@@ -192,6 +234,7 @@ function updateHud(state: HudState): void {
 
 function showResult(result: Omit<ScoreSubmission, 'player_name'>): void {
   screen = 'result';
+  audio.music.setScene('home');
   el('hud').hidden = true;
   el('result').hidden = false;
   document.querySelectorAll<HTMLButtonElement>('header [data-leaderboard]').forEach((button) => {

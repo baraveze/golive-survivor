@@ -14,7 +14,7 @@ describe('language preference and translated game content', () => {
     const { PHASES, DEFEAT_MESSAGES } = await import('../src/game/config/messages');
     const { validateNickname } = await import('../src/utils/nickname');
     expect(i18n.language).toBe(language);
-    expect(ENEMIES[0].label).toBe(language === 'es' ? 'ERROR' : 'BUG');
+    expect(ENEMIES[0].label).toBe(catalog.BUG[language === 'es' ? 0 : 1]);
     expect(BOSS.label).toBe(language === 'es' ? 'INCIDENTE EN PRODUCCIÓN' : 'PRODUCTION ISSUE');
     expect(PHASES[0].name).toBe(language === 'es' ? 'VERDE' : 'GREEN');
     expect(DEFEAT_MESSAGES[0]).toBe(

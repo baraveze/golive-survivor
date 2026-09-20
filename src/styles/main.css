@@ -9,6 +9,50 @@
   --muted: #8190a6;
   --border: #233044;
 }
+#audio-dialog .audio-options {
+  padding: 24px;
+  overflow-y: auto;
+  font-size: 15px;
+  line-height: 1.65;
+}
+.audio-options label {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 48px;
+  margin: 0 0 12px;
+  font-size: 16px;
+  letter-spacing: 0;
+  cursor: pointer;
+}
+.audio-options input[type='checkbox'] {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  accent-color: var(--green);
+}
+.music-credits {
+  border-top: 1px solid var(--border);
+  margin-top: 24px;
+}
+.music-credits a {
+  color: var(--cyan);
+  text-decoration: underline;
+}
+#audio-title {
+  font-size: 20px;
+  margin: 0;
+}
+#close-audio {
+  min-width: 44px;
+  min-height: 44px;
+}
+.site-header {
+  flex-wrap: wrap;
+}
+.site-header nav {
+  flex-wrap: wrap;
+}
 * {
   box-sizing: border-box;
 }
@@ -60,12 +104,14 @@ footer {
   margin: auto;
 }
 .site-header {
-  height: 102px;
+  height: auto;
+  min-height: 102px;
+  gap: 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #1a2535;
-  padding: 0 4px;
+  padding: 20px 4px;
 }
 .brand {
   display: flex;
